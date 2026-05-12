@@ -1,0 +1,121 @@
+{
+  "N_main": 10000000,
+  "N_features": 300000,
+  "step1": {
+    "elapsed_s": 3.97,
+    "P_b1": 0.500001
+  },
+  "step2a_theta3_wheel": {
+    "q_210": 0.500007,
+    "q_321": 0.499996,
+    "abs_delta_q": 1.1e-05,
+    "pi_210_theory": 0.499994,
+    "pi_321_theory": 0.500006,
+    "emp_210": 0.499994,
+    "emp_321": 0.500006,
+    "verdict": "FALSIFIED"
+  },
+  "step2b_bit_history_wheel": {
+    "q_prev0": 0.998919,
+    "q_prev1": 0.001087,
+    "abs_delta_q": 0.997832,
+    "pi_b0_theory": 0.499999,
+    "pi_b1_theory": 0.500001,
+    "emp_b0": 0.499999,
+    "emp_b1": 0.500001
+  },
+  "step3_phase_slip": {
+    "slip_rate": 0.001084,
+    "slip_rate_x1e3": 1.0839,
+    "n_slips": 10839,
+    "n_pairs": 9999999,
+    "slip_given_prev0": 0.001081,
+    "slip_given_prev1": 0.001087,
+    "mean_run_length": 415.0239,
+    "run_length_hist": {
+      "1": 2110,
+      "2": 294,
+      "3": 7,
+      "4": 90,
+      "5": 14,
+      "6": 22,
+      "7": 10,
+      "8": 17
+    }
+  },
+  "step4_features": {
+    "corr_X1_local_gap_proxy": -0.44056,
+    "corr_X2_neighbour_density": -0.11773,
+    "corr_X3_recency": 0.64645,
+    "corr_X4_down_fraction": 0.0329,
+    "doc_targets": {
+      "X1": 0.41,
+      "X2": 0.67,
+      "X3": 0.38,
+      "X4": 0.72
+    }
+  },
+  "step5_closure": {
+    "accuracy_majority_baseline": 0.5,
+    "accuracy_bit_history_only": 0.99645,
+    "accuracy_logistic_4feat": 0.98575,
+    "accuracy_logistic_X3X4_prev_b": 0.99645,
+    "doc_target": 0.89,
+    "train_log_loss": 0.21753
+  },
+  "step6_stationarity": [
+    {
+      "n": 10000,
+      "q_prev0": 0.977764,
+      "q_prev1": 0.025165,
+      "pi_b0_theory": 0.49925,
+      "emp_p_b0": 0.4992
+    },
+    {
+      "n": 100000,
+      "q_prev0": 0.990098,
+      "q_prev1": 0.010278,
+      "pi_b0_theory": 0.499905,
+      "emp_p_b0": 0.4999
+    },
+    {
+      "n": 1000000,
+      "q_prev0": 0.996598,
+      "q_prev1": 0.003448,
+      "pi_b0_theory": 0.499988,
+      "emp_p_b0": 0.499988
+    },
+    {
+      "n": 5000000,
+      "q_prev0": 0.99861,
+      "q_prev1": 0.001401,
+      "pi_b0_theory": 0.499997,
+      "emp_p_b0": 0.499997
+    },
+    {
+      "n": 10000000,
+      "q_prev0": 0.998919,
+      "q_prev1": 0.001087,
+      "pi_b0_theory": 0.499999,
+      "emp_p_b0": 0.499999
+    }
+  ],
+  "step7_growth": {
+    "max_a_n": 61998984,
+    "n_at_max": 8466703,
+    "mean_a_n": 8589923.78,
+    "mean_a_n_over_n": 0.858992,
+    "nlogn": 161180956.51,
+    "ratio_max_over_nlogn": 0.384655
+  },
+  "summary": {
+    "theta3_wheel_falsified": true,
+    "slip_rate_in_target_range": false,
+    "bit_history_strong_separation": true,
+    "features_carry_signal": true,
+    "closure_accuracy_pass": true,
+    "growth_law_pass": false,
+    "pass_count": 4,
+    "total_checks": 6
+  }
+}
