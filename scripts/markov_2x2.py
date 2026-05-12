@@ -1,176 +1,288 @@
 #!/usr/bin/env python3
 """
-recaman_wheel_core.py
-=====================
+markov_2x2.py
+=============
 
-Comprehensive demonstration of the Recamán Bit-History Wheel
-and its connection to Möbius inversion / Delannoy duality.
+Fit an honest first-order 2x2 Markov surrogate to the true Recaman
+obstruction stream.
 
-This script shows what the wheel model explains cleanly:
-- Near-perfect alternation of the obstruction bit
-- Low phase-slip rate
-- Stationary distribution
-- Growth law (linear typical + n log n upper envelope)
-- Why the Θ₃ (210/321) wheel is falsified while the bit-history wheel works
+State is the previous obstruction bit:
+  0 = free/down step
+  1 = blocked/up step
 
-Run: python3 recaman_wheel_core.py
+This is a descriptive lag-1 model, not a claim that Recaman is exactly
+Markovian on two states. The script reports where the fit is strong
+(transition probabilities, stationary mass, phase-slip rate) and where
+residual structure remains (k-block KL gap against a fitted null).
 """
 
-import numpy as np
+from __future__ import annotations
+
+import argparse
 import math
 from collections import Counter
+from dataclasses import dataclass
 
-# ---------------------------------------------------------------------------
-# 1. True Recamán generator (full visited memory)
-# ---------------------------------------------------------------------------
+import numpy as np
 
-def generate_recaman(N: int):
-    """Generate first N terms + obstruction bits b_n (1=blocked/up, 0=free/down)"""
-    a = np.zeros(N + 1, dtype=np.int64)
-    b = np.zeros(N + 1, dtype=np.int8)
+
+@dataclass(frozen=True)
+class MarkovFit:
+    transition: np.ndarray
+    counts: np.ndarray
+
+    @property
+    def q_prev0(self) -> float:
+        return float(self.transition[0, 1])
+
+    @property
+    def q_prev1(self) -> float:
+        return float(self.transition[1, 1])
+
+
+def generate_recaman(n_terms: int) -> tuple[np.ndarray, np.ndarray]:
+    """Generate Recaman values a_n and obstruction bits b_n up to n_terms."""
+    if n_terms < 1:
+        raise ValueError("n_terms must be at least 1")
+
+    values = np.zeros(n_terms + 1, dtype=np.int64)
+    bits = np.zeros(n_terms + 1, dtype=np.int8)
     visited = {0}
-    for n in range(1, N + 1):
-        cand = a[n-1] - n
-        if cand > 0 and cand not in visited:
-            a[n] = cand
-            b[n] = 0          # free down
+
+    for n in range(1, n_terms + 1):
+        candidate = int(values[n - 1]) - n
+        if candidate > 0 and candidate not in visited:
+            values[n] = candidate
         else:
-            a[n] = a[n-1] + n
-            b[n] = 1          # blocked → up
-        visited.add(a[n])
-    return a, b
+            values[n] = values[n - 1] + n
+            bits[n] = 1
+        visited.add(int(values[n]))
 
-# ---------------------------------------------------------------------------
-# 2. Bit-History Wheel (the model that actually works)
-# ---------------------------------------------------------------------------
+    return values, bits
 
-def fit_bit_history_wheel(b: np.ndarray):
+
+def fit_markov_2x2(bits: np.ndarray) -> MarkovFit:
     """
-    Fit the dominant model: q conditioned on previous bit b_{n-1}
-    q0 = Pr[b_n=1 | b_{n-1}=0]   (prev was FREE)
-    q1 = Pr[b_n=1 | b_{n-1}=1]   (prev was BLOCKED)
-    """
-    N = len(b) - 1
-    total = np.zeros(2, dtype=np.int64)
-    blocked = np.zeros(2, dtype=np.int64)
-    for n in range(2, N + 1):
-        prev = b[n-1]
-        total[prev] += 1
-        blocked[prev] += b[n]
-    q0 = blocked[0] / total[0]
-    q1 = blocked[1] / total[1]
-    return q0, q1, total, blocked
+    Fit T[i, j] = Pr[b_n = j | b_{n-1} = i] for i, j in {0, 1}.
 
-def compute_phase_slip_rate(b: np.ndarray):
-    """Phase slip = b_n == b_{n-1} (alternation breaks)"""
-    n_slips = np.sum(b[1:] == b[:-1])
-    rate = n_slips / (len(b) - 1)
-    return rate, n_slips
-
-# ---------------------------------------------------------------------------
-# 3. Stationary distribution of the bit-history wheel
-# ---------------------------------------------------------------------------
-
-def stationary_distribution(q0: float, q1: float):
+    The comparisons start at n=2 because b_0 is only a sentinel.
     """
-    2-state Markov chain on {FREE=0, BLOCKED=1}
-    Transition: T[0→1] = q0, T[1→0] = 1-q1
-    """
-    t01 = q0
-    t10 = 1.0 - q1
-    pi0 = t10 / (t01 + t10)
-    pi1 = t01 / (t01 + t10)
-    return pi0, pi1
+    if len(bits) < 3:
+        raise ValueError("Need at least two real obstruction bits to fit transitions")
 
-# ---------------------------------------------------------------------------
-# 4. Simple forward simulation of the wheel (reproduces histogram shape)
-# ---------------------------------------------------------------------------
+    counts = np.zeros((2, 2), dtype=np.int64)
+    for prev_bit, curr_bit in zip(bits[1:-1], bits[2:]):
+        counts[int(prev_bit), int(curr_bit)] += 1
 
-def simulate_wheel(n_steps: int, q0: float, q1: float, seed: int = 42):
+    row_totals = counts.sum(axis=1, keepdims=True)
+    if np.any(row_totals == 0):
+        raise ValueError("Both bit states must appear at least once to fit a 2x2 chain")
+
+    transition = counts / row_totals
+    return MarkovFit(transition=transition, counts=counts)
+
+
+def empirical_distribution(bits: np.ndarray) -> np.ndarray:
+    counts = np.bincount(bits[1:].astype(np.int64), minlength=2)
+    return counts / counts.sum()
+
+
+def stationary_distribution(transition: np.ndarray) -> np.ndarray:
     """
-    Simulate the bit-history wheel + simple linear growth model.
-    Returns simulated a_n / n values for histogram comparison.
+    Closed-form stationary law for a 2-state chain.
+
+      T[0,1] = p01
+      T[1,0] = p10
+
+    Then pi = (p10, p01) / (p01 + p10) when the denominator is nonzero.
     """
-    np.random.seed(seed)
-    b = np.zeros(n_steps + 1, dtype=np.int8)
-    x = np.zeros(n_steps + 1)          # scaled a_n / n
-    for n in range(1, n_steps + 1):
-        prev = b[n-1]
-        if prev == 0:
-            b[n] = 1 if np.random.rand() < q0 else 0
+    p01 = float(transition[0, 1])
+    p10 = float(transition[1, 0])
+    denom = p01 + p10
+    if denom == 0.0:
+        raise ValueError("Stationary distribution is not unique for this degenerate chain")
+    return np.array([p10 / denom, p01 / denom], dtype=np.float64)
+
+
+def phase_slip_rate(bits: np.ndarray) -> tuple[float, int, int]:
+    """
+    Phase slip = b_n == b_{n-1} for n >= 2.
+
+    The old version incorrectly included the sentinel comparison (b_1, b_0).
+    """
+    n_pairs = len(bits) - 2
+    if n_pairs <= 0:
+        raise ValueError("Need at least two real obstruction bits to measure slips")
+    n_slips = int(np.sum(bits[2:] == bits[1:-1]))
+    return n_slips / n_pairs, n_slips, n_pairs
+
+
+def run_length_histogram(bits: np.ndarray) -> Counter[int]:
+    """Histogram of maximal runs of identical real obstruction bits."""
+    runs: Counter[int] = Counter()
+    if len(bits) <= 2:
+        return runs
+
+    current = int(bits[1])
+    length = 1
+    for raw_value in bits[2:]:
+        value = int(raw_value)
+        if value == current:
+            length += 1
         else:
-            b[n] = 1 if np.random.rand() < q1 else 0
+            runs[length] += 1
+            current = value
+            length = 1
+    runs[length] += 1
+    return runs
 
-        # Simple growth model: blocked → +1 (tower), free → -0.6 (collapse)
-        drift = 1.0 if b[n] == 1 else -0.6
-        x[n] = x[n-1] + drift / n          # normalized step
 
-    return x[1:]
+def k_block_distribution(bits: np.ndarray, k: int) -> dict[tuple[int, ...], float]:
+    """Empirical distribution of length-k bit blocks over the real stream b_1..b_N."""
+    if k < 1:
+        raise ValueError("k must be positive")
+    if len(bits) - 1 < k:
+        return {}
 
-# ---------------------------------------------------------------------------
-# 5. Main analysis
-# ---------------------------------------------------------------------------
+    counts: Counter[tuple[int, ...]] = Counter()
+    for i in range(1, len(bits) - k + 1):
+        block = tuple(int(x) for x in bits[i : i + k])
+        counts[block] += 1
 
-def main():
-    N = 2_000_000          # 2 million terms — fast and statistically solid
-    print("=" * 70)
-    print("Recamán Bit-History Wheel — Core Analysis")
-    print(f"N = {N:,} terms")
-    print("=" * 70)
+    total = sum(counts.values())
+    return {block: count / total for block, count in counts.items()}
 
-    # --- Generate data ---
-    print("\n[1] Generating Recamán sequence...")
-    a, b = generate_recaman(N)
-    print(f"    Max a_n = {a.max():,}")
-    print(f"    Mean a_n / n = {np.mean(a[1:]) / N:.4f}")
 
-    # --- Bit-history wheel fit ---
-    print("\n[2] Fitting Bit-History Wheel (conditioning on b_{n-1})...")
-    q0, q1, total, blocked = fit_bit_history_wheel(b)
-    print(f"    q(prev=0) = Pr[b_n=1 | b_{{n-1}}=0] = {q0:.6f}")
-    print(f"    q(prev=1) = Pr[b_n=1 | b_{{n-1}}=1] = {q1:.6f}")
-    print(f"    Separation |q0 - q1| = {abs(q0 - q1):.6f}")
+def kl_divergence(p: dict[tuple[int, ...], float], q: dict[tuple[int, ...], float], eps: float = 1e-12) -> float:
+    """KL(p || q) over the union of keys, with epsilon smoothing on missing q-mass."""
+    total = 0.0
+    for key in set(p) | set(q):
+        pk = p.get(key, 0.0)
+        qk = max(q.get(key, 0.0), eps)
+        if pk > 0.0:
+            total += pk * math.log(pk / qk)
+    return total
 
-    # --- Phase-slip rate ---
-    print("\n[3] Phase-Slip Analysis...")
-    slip_rate, n_slips = compute_phase_slip_rate(b)
-    print(f"    Phase-slip rate (b_n == b_{{n-1}}) = {slip_rate:.6f} ({slip_rate*1000:.2f}×10⁻³)")
-    print(f"    Mean alternating run length ≈ {1/slip_rate:.1f}")
 
-    # --- Stationary distribution ---
-    print("\n[4] Stationary Distribution of the Wheel...")
-    pi0, pi1 = stationary_distribution(q0, q1)
-    emp_p0 = 1.0 - np.mean(b[1:])
-    print(f"    Theoretical: π(FREE=0) = {pi0:.5f},  π(BLOCKED=1) = {pi1:.5f}")
-    print(f"    Empirical:   p(b=0)    = {emp_p0:.5f},  p(b=1)    = {1-emp_p0:.5f}")
+def simulate_markov_bits(
+    n_terms: int,
+    transition: np.ndarray,
+    seed: int,
+    initial_bit: int,
+) -> np.ndarray:
+    """Simulate the fitted 2x2 chain without mutating global RNG state."""
+    if n_terms < 1:
+        raise ValueError("n_terms must be at least 1")
 
-    # --- Simple simulation to show histogram shape ---
-    print("\n[5] Simulating wheel (n=500,000) to reproduce distribution shape...")
-    x_sim = simulate_wheel(500_000, q0, q1)
-    print(f"    Simulated mean x = {np.mean(x_sim):.4f}")
-    print(f"    Simulated max x  = {np.max(x_sim):.4f}")
+    rng = np.random.default_rng(seed)
+    bits = np.zeros(n_terms + 1, dtype=np.int8)
+    bits[1] = np.int8(initial_bit)
+    for n in range(2, n_terms + 1):
+        prev_bit = int(bits[n - 1])
+        bits[n] = np.int8(rng.random() < transition[prev_bit, 1])
+    return bits
 
-    # --- Summary ---
-    print("\n" + "=" * 70)
-    print("KEY INSIGHTS (Wheel + Möbius Duality)")
-    print("=" * 70)
-    print("""
-The Recamán obstruction process is almost perfectly alternating
-(run length ≈ 415). This is captured by a trivial 2-state Markov
-chain conditioned on the previous bit b_{n-1}:
 
-   • After FREE (b=0)  → next is BLOCKED with probability ≈ 0.999
-   • After BLOCKED (b=1) → next is FREE   with probability ≈ 0.999
+def mean_scaled_value(values: np.ndarray) -> float:
+    """Return mean(a_n / n) over n = 1..N."""
+    n = np.arange(1, len(values), dtype=np.float64)
+    return float(np.mean(values[1:] / n))
 
-This is the exact combinatorial inverse (Möbius shadow) of the
-additive Delannoy path-counting structure. The Θ₃ (210/321) wheel
-is falsified — the real memory is carried by the obstruction bit
-itself, not by a 3-symbol operator word.
 
-The long power-law tail and linear growth (a_n ~ 0.86 n at N=2M)
-both emerge naturally from this simple alternating process with
-occasional phase slips.
-""")
+def print_run_table(real_runs: Counter[int], null_runs: Counter[int], max_len: int = 6) -> None:
+    print("\nRun-length comparison (identical-bit runs)")
+    print(f"{'len':>5}  {'real':>10}  {'null':>10}  {'ratio':>10}")
+    for run_len in range(1, max_len + 1):
+        real_count = real_runs.get(run_len, 0)
+        null_count = null_runs.get(run_len, 0)
+        ratio = real_count / null_count if null_count else float("inf")
+        print(f"{run_len:>5}  {real_count:>10}  {null_count:>10}  {ratio:>10.3f}")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Fit a 2x2 Markov surrogate to the true Recaman obstruction stream.")
+    parser.add_argument("-N", "--terms", type=int, default=200_000, help="Number of Recaman terms to generate.")
+    parser.add_argument("--seed", type=int, default=42, help="Seed for the fitted Markov null simulation.")
+    parser.add_argument(
+        "--block-sizes",
+        type=int,
+        nargs="+",
+        default=[2, 4, 6],
+        help="Block sizes used for KL comparisons against the fitted null.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+
+    print("=" * 72)
+    print("Recaman Obstruction Stream: Honest 2x2 Markov Fit")
+    print(f"N = {args.terms:,}   seed = {args.seed}")
+    print("=" * 72)
+
+    values, real_bits = generate_recaman(args.terms)
+    fit = fit_markov_2x2(real_bits)
+    stationary = stationary_distribution(fit.transition)
+    empirical = empirical_distribution(real_bits)
+    slip_rate, n_slips, n_pairs = phase_slip_rate(real_bits)
+
+    null_bits = simulate_markov_bits(
+        n_terms=args.terms,
+        transition=fit.transition,
+        seed=args.seed,
+        initial_bit=int(real_bits[1]),
+    )
+    null_bits_2 = simulate_markov_bits(
+        n_terms=args.terms,
+        transition=fit.transition,
+        seed=args.seed + 1,
+        initial_bit=int(real_bits[1]),
+    )
+    null_empirical = empirical_distribution(null_bits)
+    null_slip_rate, null_slips, _ = phase_slip_rate(null_bits)
+
+    print("\n[1] True Recaman run")
+    print(f"max a_n                = {int(values.max()):,}")
+    print(f"mean(a_n / n)          = {mean_scaled_value(values):.6f}")
+    print(f"empirical p(b=0), p(b=1) = ({empirical[0]:.6f}, {empirical[1]:.6f})")
+
+    print("\n[2] Fitted 2x2 transition matrix")
+    print("Rows = previous bit, columns = next bit")
+    print(f"counts[0->0, 0->1]     = ({fit.counts[0, 0]:,}, {fit.counts[0, 1]:,})")
+    print(f"counts[1->0, 1->1]     = ({fit.counts[1, 0]:,}, {fit.counts[1, 1]:,})")
+    print(f"P(next=1 | prev=0)     = {fit.q_prev0:.6f}")
+    print(f"P(next=1 | prev=1)     = {fit.q_prev1:.6f}")
+    print(f"|q_prev0 - q_prev1|    = {abs(fit.q_prev0 - fit.q_prev1):.6f}")
+
+    print("\n[3] Stationary mass and phase slips")
+    print(f"stationary pi(0), pi(1) = ({stationary[0]:.6f}, {stationary[1]:.6f})")
+    print(f"null p(b=0), p(b=1)     = ({null_empirical[0]:.6f}, {null_empirical[1]:.6f})")
+    print(f"real slip rate          = {slip_rate:.6f}  ({n_slips:,}/{n_pairs:,})")
+    print(f"null slip rate          = {null_slip_rate:.6f}  ({null_slips:,}/{n_pairs:,})")
+
+    real_runs = run_length_histogram(real_bits)
+    null_runs = run_length_histogram(null_bits)
+    print_run_table(real_runs, null_runs)
+
+    print("\n[4] Residual structure beyond the 2x2 fit")
+    for k in args.block_sizes:
+        real_dist = k_block_distribution(real_bits, k)
+        null_dist = k_block_distribution(null_bits, k)
+        null_dist_2 = k_block_distribution(null_bits_2, k)
+        kl_real_vs_null = kl_divergence(real_dist, null_dist)
+        kl_null_vs_null = kl_divergence(null_dist, null_dist_2)
+        print(
+            f"k={k}: KL(real || null) = {kl_real_vs_null:.6f}   "
+            f"KL(null || null) = {kl_null_vs_null:.6f}   "
+            f"excess = {kl_real_vs_null - kl_null_vs_null:+.6f}"
+        )
+
+    print("\nSummary")
+    print("The lag-1 2x2 model captures the near-alternating transition bias well.")
+    print("Any positive KL excess above the null-vs-null baseline is residual memory")
+    print("that the two-state first-order surrogate does not capture.")
+
 
 if __name__ == "__main__":
     main()
