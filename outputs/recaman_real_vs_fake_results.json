@@ -1,0 +1,99 @@
+{
+  "horizons": {
+    "n1": 200000,
+    "n2": 1000000,
+    "h1": 1345032,
+    "terminal_value_n1": 161078,
+    "terminal_value_n2": 2057164,
+    "visited_n1": 146146,
+    "visited_n2": 736749,
+    "unvisited_at_n1": 1198887,
+    "late_arrivals": 422977,
+    "still_unvisited": 775910,
+    "late_fraction": 0.3528080628115911,
+    "delay_mean": 358346.9195440887,
+    "delay_median": 341761.0,
+    "delay_p90": 699724.8
+  },
+  "sample": {
+    "per_class": 100000,
+    "total": 200000,
+    "late_digit_lengths": "4d:1, 5d:748, 6d:73383, 7d:25868",
+    "still_digit_lengths": "4d:1, 5d:748, 6d:73383, 7d:25868"
+  },
+  "models": {
+    "value42_rf": {
+      "feature_dim": 42,
+      "fold_aucs": [
+        0.8036904050000001,
+        0.80286706,
+        0.8030851174999999,
+        0.7966991649999999,
+        0.7991306874999999
+      ],
+      "mean_auc": 0.801094487
+    },
+    "value42_plus_local_rf": {
+      "feature_dim": 51,
+      "fold_aucs": [
+        0.9582144524999999,
+        0.9569266025000001,
+        0.9575895175,
+        0.9570810775,
+        0.9571107849999999
+      ],
+      "mean_auc": 0.957384487,
+      "lift_over_value42": 0.15629000000000004
+    }
+  },
+  "top_features_value42_plus_local": [
+    {
+      "name": "residual_h_minus_N1",
+      "importance": 0.2101924298056439
+    },
+    {
+      "name": "relative_value_h_over_H1",
+      "importance": 0.2048684663304824
+    },
+    {
+      "name": "first_digit",
+      "importance": 0.1358352342412702
+    },
+    {
+      "name": "gap_size",
+      "importance": 0.11447319782961801
+    },
+    {
+      "name": "right_gap",
+      "importance": 0.09074109775528018
+    },
+    {
+      "name": "left_gap",
+      "importance": 0.05637660682593125
+    },
+    {
+      "name": "distance_to_nearest_boundary",
+      "importance": 0.05549714590082252
+    },
+    {
+      "name": "position_in_gap",
+      "importance": 0.04296597084513003
+    },
+    {
+      "name": "length",
+      "importance": 0.017549141828303066
+    },
+    {
+      "name": "digit_count_1",
+      "importance": 0.01715431576686492
+    },
+    {
+      "name": "basis_lift_3",
+      "importance": 0.006305476203925182
+    },
+    {
+      "name": "basis_lift_2",
+      "importance": 0.004654907006000484
+    }
+  ]
+}
