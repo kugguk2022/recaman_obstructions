@@ -51,6 +51,7 @@ import json
 import math
 import time
 from collections import Counter, defaultdict
+from pathlib import Path
 from typing import List, Tuple, Dict
 
 # ---------------------------------------------------------------------------
@@ -724,7 +725,9 @@ def main():
         "total_checks": 6,
     }
 
-    out_path = "recaman_wheel_results.json"
+    out_dir = Path(__file__).resolve().parent.parent / "outputs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "recaman_wheel_results.json"
     with open(out_path, "w", encoding="utf-8") as fh:
         json.dump(results, fh, indent=2)
     print(f"\n  Results written to {out_path}")

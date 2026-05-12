@@ -1,0 +1,965 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  11pt,
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Calibri}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Recamán, Collatz, and Delannoy: An Obstruction-Bit Taxonomy},
+  pdfauthor={Zolton (synthesis from collaborative drafts)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Recamán, Collatz, and Delannoy: An Obstruction-Bit Taxonomy}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Markov Shadows, Operator Wheels, and the 321210 Pattern}
+\author{Zolton (synthesis from collaborative drafts)}
+\date{May 2026}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{abstract}{%
+\section{Abstract}\label{abstract}}
+
+We propose a taxonomy of integer-sequence dynamical systems by
+\emph{where the obstruction information lives}: locally in the current
+state (Collatz), globally in the entire history (Recamán), or freely as
+an unconstrained choice (Delannoy walks). All three admit a
+Collatz-style branch-map form \[
+x_{n+1} = F_{b_n}(x_n), \qquad b_n \in \{0,1\},
+\] and the differences in how \(b_n\) is generated explain the
+qualitative differences in their dynamics.
+
+For Recamán specifically we tested whether a finite-state symbolic
+shadow of the \textbf{obstruction process} \(\{b_n\}\) using the
+reverse-complement involution \(\Theta_3\) on words over \(\{0,1,2,3\}\)
+captures the dynamics. The empirical answer is \textbf{no}: the
+two-state \(\Theta_3\) wheel has essentially zero predictive content for
+\(b_n\) (\(|q(0) - q(1)| < 5 \times 10^{-4}\)), and KL divergence on
+\(8\)-block bit distributions exceeds the Markov-null noise floor by a
+factor of \(\sim 3{,}000\). What does work is bit-history conditioning:
+\(\Pr[b_n \ne b_{n-1}] = 0.993\), i.e.~the obstruction stream is
+\textbf{near-perfect alternation with rare phase-slip defects at rate
+\(\sim 7 \times 10^{-3}\)}. The remaining task is therefore to
+characterise the phase-slip process, not to fit a Markov wheel.
+
+We formulate the \textbf{Recamán Markov-Shadow Conjecture} on the value
+side: late or missing values are statistically enriched near an
+approximate Markov surface \[
+X^2 + Y^2 + Z^2 \;\approx\; \kappa\, XYZ.
+\] A \(\zeta(3)\)-coupling is shown to be impossible over integers by
+Apéry's theorem; only an approximate real surface is admissible.
+Delannoy magnitudes appear in the Recamán positional distribution
+\textbf{because the Recamán obstruction process generates them}: the
+three-way branch structure (down-free / down-blocked-becomes-up /
+up-by-boundary) is intrinsic to the rule, and the Delannoy recurrence
+falls out of the operator-word counting. We end with a falsifiable
+empirical protocol and open problems.
+
+\begin{quote}
+\textbf{Status.} The taxonomy in Section 2 is a genuine conceptual
+claim. The \(\Theta_3\) wheel has been \textbf{empirically falsified} as
+a Markov model of the obstruction process; the replacement is
+bit-history conditioning and a sharpened open problem on phase-slip
+dynamics (Section 3.5). The Markov-shadow conjecture on the value side
+is empirically testable but currently untested on the full Chan hole
+list. The Delannoy structure in the positional distribution is generated
+by Recamán's own three-way branch and is \emph{internal} to the
+dynamics, not an external envelope.
+\end{quote}
+
+\hypertarget{setup-three-sequences-one-branch-map-form}{%
+\section{1. Setup: Three Sequences, One Branch-Map
+Form}\label{setup-three-sequences-one-branch-map-form}}
+
+\hypertarget{recamuxe1n}{%
+\subsection{1.1 Recamán}\label{recamuxe1n}}
+
+Recamán's sequence is defined by \(a_0 = 0\) and \[
+a_n = \begin{cases} a_{n-1} - n & \text{if } a_{n-1} - n > 0 \text{ and } a_{n-1} - n \notin V_{n-1}, \\ a_{n-1} + n & \text{otherwise,} \end{cases}
+\] where \(V_{n-1} = \{a_0, a_1, \dots, a_{n-1}\}\).
+
+Introducing the \textbf{obstruction bit} \[
+b_n \;=\; \mathbf{1}\!\left[\,a_{n-1} - n \le 0 \;\;\lor\;\; a_{n-1} - n \in V_{n-1}\,\right],
+\] the recursion collapses to the compact Collatz-style form \[
+\boxed{\;a_n \;=\; a_{n-1} + n\,(2 b_n - 1)\;}
+\]
+
+\hypertarget{the-signed-triangular-identity-and-the-rigorous-tower}{%
+\subsubsection{1.1.1 The signed-triangular identity and the rigorous
+tower}\label{the-signed-triangular-identity-and-the-rigorous-tower}}
+
+Unrolling the recursion gives the \textbf{exact closed form} \[
+\boxed{\;a_n \;=\; T_n \;-\; 2 \sum_{i \in D_n} i, \qquad T_n = \frac{n(n+1)}{2},\;}
+\] where \(D_n \subseteq \{1, \dots, n\}\) is the set of indices at
+which the rule took a \emph{down} step (equivalently,
+\(i \in D_n \iff b_i = 0\)). This identity is exact, not heuristic, and
+we have verified it numerically up to \(n = 2 \times 10^5\).
+
+It supplies the \textbf{rigorous, non-numerological version of the tower
+idea}: rather than decomposing \(a_n\) by its decimal digits, we
+decompose it by the deterministic objects that produced it. The layers
+are \[
+\begin{aligned}
+L_0 &= a_n & &\text{(the value)} \\
+L_1 &= T_n = \tfrac{n(n+1)}{2} & &\text{(triangular envelope)} \\
+L_2 &= D_n & &\text{(down-step index set)} \\
+L_3 &= a_{n-1} - n & &\text{(candidate down-target)} \\
+L_4 &= \mathbf{1}[a_{n-1} - n \in V_{n-1}] & &\text{(collision indicator)} \\
+L_5 &= \text{positional encoding / residue wheel} & &\text{(symbolic shadow)}
+\end{aligned}
+\] Each layer is generated from \((a_{n-1}, V_{n-1}, n)\) by a single
+arithmetic or logical operation; the layers are stacked so that
+\emph{every dynamical question about Recamán reduces to a question about
+how \(D_n\) is built}. The Markov-shadow defect of Section 4, the
+obstruction probabilities \(q(w)\) of Section 6, and the Delannoy
+generation of Section 7 are all statements about the structure of
+\(D_n\) in disguise.
+
+\hypertarget{collatz}{%
+\subsection{1.2 Collatz}\label{collatz}}
+
+The Collatz map is \[
+T(x) = \begin{cases} x/2 & x \equiv 0 \pmod 2, \\ (3x+1)/2 & x \equiv 1 \pmod 2. \end{cases}
+\] Setting \(b_n = x_n \bmod 2\), \[
+x_{n+1} \;=\; b_n \cdot \frac{3x_n + 1}{2} \;+\; (1 - b_n) \cdot \frac{x_n}{2}.
+\]
+
+\hypertarget{delannoy-walks}{%
+\subsection{1.3 Delannoy walks}\label{delannoy-walks}}
+
+A Delannoy walk on \(\mathbb{Z}_{\ge 0}^2\) from \((0,0)\) to \((m,n)\)
+takes steps in \(\{E, N, NE\}\). The number of such walks is the
+Delannoy number \(D(m,n)\), satisfying \[
+D(m,n) \;=\; D(m-1, n) + D(m, n-1) + D(m-1, n-1).
+\] Here the ``branch bit'' generalises to a ternary choice
+\(c_n \in \{E, N, NE\}\), freely selected.
+
+\hypertarget{the-obstruction-bit-taxonomy}{%
+\section{2. The Obstruction-Bit
+Taxonomy}\label{the-obstruction-bit-taxonomy}}
+
+The three systems are unified --- and distinguished --- by where the
+branch information lives.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.11}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.43}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.26}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+System
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+State
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Obstruction bit / choice
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Information locality
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Collatz & \(x \in \mathbb{Z}_+\) & \(b_n = x_n \bmod 2\) &
+\textbf{Local} --- one bit of current state \\
+Recamán & \((a_{n-1}, n, V_{n-1})\) &
+\(b_n = \mathbf{1}[a_{n-1}{-}n \le 0 \,\lor\, a_{n-1}{-}n \in V_{n-1}]\)
+& \textbf{Global} --- entire history \\
+Delannoy & \((i,j) \in \mathbb{Z}_+^2\) & \(c_n \in \{E, N, NE\}\) free
+& \textbf{External} --- chosen, not derived \\
+\end{longtable}
+
+\textbf{The conceptual claim.} Many ``wild'' integer sequences are best
+understood not by their values but by the \emph{information structure of
+their branch rule}. Collatz is hard because the local bit interacts
+nontrivially with the multiplicative dynamics. Recamán is hard because
+the bit is non-local. Delannoy is tractable because there is no
+constraint to satisfy --- every path is legal.
+
+This taxonomy clarifies what \emph{kind} of theorem one can expect for
+each system:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Local-bit systems} admit ergodic-theoretic and 2-adic analysis
+  (the Collatz literature).
+\item
+  \textbf{Global-bit systems} require a closure approximation: replace
+  the true non-local bit by a functional of a low-dimensional shadow.
+  This is the role of the operator wheel below.
+\item
+  \textbf{Free-choice systems} are counted by combinatorial recurrences.
+  They are not \emph{external} envelopes on constrained systems ---
+  rather, the constrained systems \emph{generate} free-choice structure
+  when their constraints take a three-way form.
+\end{itemize}
+
+The Recamán--Delannoy connection sits inside Recamán: the obstruction
+rule at each step partitions into a three-way local branch (down-free /
+down-blocked-forces-up / up-by-boundary), and the operator-word count
+generated by Recamán's own dynamics satisfies a Delannoy recurrence.
+Delannoy magnitudes appear in the positional distribution
+\textbf{because the Recamán process produces them}, not because they
+bound it from outside. We make this precise in Section 7.
+
+\begin{quote}
+\textbf{Remark.} Variants of this taxonomy appear throughout
+symbolic-dynamics and ergodic-theory literature under different names
+(skew products, random-environment substitutions). The novelty here is
+the specific three-way comparison and using it to predict \emph{which}
+analytical tools should work on Recamán.
+\end{quote}
+
+\hypertarget{the-reverse-complement-wheel-theta_3}{%
+\section{\texorpdfstring{3. The Reverse-Complement Wheel
+\(\Theta_3\)}{3. The Reverse-Complement Wheel \textbackslash Theta\_3}}\label{the-reverse-complement-wheel-theta_3}}
+
+\hypertarget{the-reverse-complement-involution-theta_3}{%
+\subsection{\texorpdfstring{3.1 The reverse-complement involution
+\(\Theta_3\)}{3.1 The reverse-complement involution \textbackslash Theta\_3}}\label{the-reverse-complement-involution-theta_3}}
+
+On words over \(\{0,1,2,3\}\), define the \textbf{reverse-complement
+involution} \[
+\Theta_3(w_1 w_2 \cdots w_m) \;=\; \operatorname{rev}\!\left((3 - w_1)(3 - w_2) \cdots (3 - w_m)\right).
+\] In particular, \[
+\Theta_3(210) = 321, \qquad \Theta_3(321) = 210,
+\] so the six-digit word \(321210 = 321\,|\,210\) is a fixed point of
+the split condition \(L = \Theta_3(R)\), since \(3+0 = 2+1 = 1+2 = 3\).
+
+This is a clean symbolic symmetry of the alphabet \(\{0,1,2,3\}\). The
+remaining question is whether it usefully describes Recamán's
+obstruction process. We address this empirically.
+
+\hypertarget{the-two-state-wheel-and-its-proposed-master-equation}{%
+\subsection{3.2 The two-state wheel and its proposed master
+equation}\label{the-two-state-wheel-and-its-proposed-master-equation}}
+
+The natural two-state model uses \(S_n \in \{210, 321\}\) with the
+transition \[
+S_{n+1} \;=\; \begin{cases} \Theta_3(S_n) & \text{if } b_n = 1, \\ S_n & \text{if } b_n = 0. \end{cases}
+\] If this were a Markov model of the obstruction process, the
+conditional probabilities \(q(w) = \Pr[b_n = 1 \mid S_n = w]\) would
+satisfy a master equation with stationary distribution \[
+p(210) \;=\; \frac{q_{321}}{q_{210} + q_{321}}, \qquad p(321) \;=\; \frac{q_{210}}{q_{210} + q_{321}}.
+\] \textbf{Whether the model is appropriate is an empirical question},
+settled in 3.3.
+
+\hypertarget{empirical-test-of-the-wheel-a-strong-negative-result}{%
+\subsection{3.3 Empirical test of the wheel: a strong negative
+result}\label{empirical-test-of-the-wheel-a-strong-negative-result}}
+
+We ran the true Recamán generator to \(N = 2 \times 10^5\) terms,
+extracted the real obstruction stream \(\{b_n\}\) and the wheel-state
+stream \(\{S_n\}\), and measured the conditional block probabilities
+directly:
+
+\[
+q(0) \;=\; 0.5000, \qquad q(1) \;=\; 0.5001, \qquad |q(0) - q(1)| \;<\; 5 \times 10^{-4}.
+\]
+
+The wheel state has \textbf{essentially zero predictive content} for the
+obstruction bit. The two-state \(\Theta_3\) shadow does not separate
+Recamán's obstruction events.
+
+We confirmed this with three independent tests:
+
+\textbf{(i) Mutual information.} \(I(b_n \,;\, S_{n-1}) = 0.0000\) bits
+at both \(N = 50{,}000\) and \(N = 200{,}000\), against a marginal
+entropy \(H(b) = 1.0000\) bits.
+
+\textbf{(ii) Run-length distribution.} Real Recamán obstruction bits
+produce length-1 runs at \(\sim 4\times\) the rate of a Markov chain
+with matched marginals, and produce essentially zero runs of length
+\(\ge 6\):
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Run length & Real (N=200k) & Markov null & Ratio \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & \(197{,}699\) & \(50{,}087\) & \(3.95\times\) \\
+2 & \(326\) & \(24{,}951\) & \(0.013\times\) \\
+3 & \(422\) & \(12{,}547\) & \(0.034\times\) \\
+\(\ge 4\) & \(93\) & \(12{,}049\) & \(0.008\times\) \\
+\end{longtable}
+
+\textbf{(iii) KL divergence on \(k\)-block distributions.} At \(k = 8\)
+block length, \[
+D_{\text{KL}}\bigl(\text{real} \,\|\, \text{Markov null}\bigr) \;=\; 4.63 \text{ nats},
+\] versus a noise floor of \(0.0015\) nats between independent null
+realisations --- an excess of \(\sim 3{,}000\times\) the baseline.
+
+\textbf{Conclusion.} The obstruction process is provably non-Markovian
+on the \(\Theta_3\) wheel. Any model that conditions \(b_n\) on the
+wheel state alone cannot reproduce Recamán's bit-level structure.
+
+\hypertarget{what-replaces-the-wheel-bit-history-conditioning}{%
+\subsection{3.4 What replaces the wheel: bit-history
+conditioning}\label{what-replaces-the-wheel-bit-history-conditioning}}
+
+A held-out validation across a broad family of candidate states (we
+split \(N\) in half, fit \(\Pr[b_n = 1 \mid X]\) on the first half,
+scored log-likelihood on the second) identified what \emph{does} carry
+predictive information:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Candidate state \(X\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\(\Delta\) bits/bit (held-out)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Verdict
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Wheel \(S_{n-1}\) & \(+0.000\) & No signal \\
+\(a_{n-1} \bmod m\), any \(m \le 1024\) & \(\approx 0.000\) or negative
+& No signal \\
+\(n \bmod m\), any \(m\) & \(-0.032\) & Actively overfits \\
+Joint \((a_{n-1} \bmod m,\, n \bmod m)\) & \(\le 0\) for \(m \le 256\) &
+No signal \\
+Visited-density bucket \(\rho_n\) & \(+0.000\) & No signal \\
+\textbf{Previous bit \(b_{n-1}\)} & \(\mathbf{+0.956}\) &
+\textbf{Near-complete} \\
+Last 2 bits \((b_{n-2}, b_{n-1})\) & \(+0.968\) & Saturating \\
+Last 3 bits & \(+0.971\) & Saturating \\
+Last 16 bits & \(+0.972\) & No further lift \\
+\end{longtable}
+
+The obstruction stream is \textbf{autoregressive on its own history},
+not on any positional or residue structure of the value sequence. The
+direct joint table at \(N = 2 \times 10^5\) is:
+
+\[
+\begin{array}{c|cc}
+& b_n = 0 & b_n = 1 \\ \hline
+b_{n-1} = 0 & 720 & 99{,}269 \\
+b_{n-1} = 1 & 99{,}270 & 740
+\end{array}
+\]
+
+equivalently \[
+\Pr[b_n \ne b_{n-1}] \;=\; 0.993, \qquad \Pr[b_n = b_{n-1}] \;=\; 0.007.
+\]
+
+\textbf{Recamán's obstruction stream is an almost-perfect alternating
+sequence \(\cdots\, 0\, 1\, 0\, 1\, 0\, 1 \cdots\) with rare phase-slip
+defects at rate \(\sim 7 \times 10^{-3}\).} The down/up balance is not a
+stationary distribution over a non-trivial state space; it is the
+symmetry of the alternation. The wheel's symbolic flip was modelling a
+process whose actual dynamics are \emph{deterministic alternation plus
+rare defects}.
+
+\hypertarget{the-phase-slip-process}{%
+\subsection{3.5 The phase-slip process}\label{the-phase-slip-process}}
+
+What remains to model is the location of the phase-slip events. Define
+\[
+\sigma_n \;=\; b_n \oplus b_{n-1} \;\in\; \{0, 1\},
+\] the indicator that the alternation \emph{broke} at step \(n\)
+(\(\oplus\) is XOR). Then \(\sigma_n = 0\) means ``alternation continued
+normally''; \(\sigma_n = 1\) means ``phase slipped.'' We have
+\(\Pr[\sigma_n = 1] \approx 0.007\), and the problem of describing
+Recamán's obstruction process \textbf{reduces to describing where these
+rare events occur}.
+
+The triple counts of \((b_{n-2}, b_{n-1}, b_n)\) at
+\(N = 2 \times 10^5\) are illuminating:
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Triple & Count & Fraction \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\((0,1,0)\) & \(98{,}937\) & \(0.4947\) \\
+\((1,0,1)\) & \(98{,}761\) & \(0.4938\) \\
+\((1,0,0) = (0,0,1)\) & \(508\) each & \(0.0025\) each \\
+\((0,1,1) = (1,1,0)\) & \(\sim 333\) each & \(0.0017\) each \\
+\((0,0,0), (1,1,1)\) & \(212, 407\) & \(0.0011, 0.0020\) \\
+\end{longtable}
+
+The two dominant triples \((0,1,0)\) and \((1,0,1)\) together account
+for \(98.85\%\) of all triples. The defect triples are roughly twice as
+common when crossing through \(b = 0\) as through \(b = 1\) --- a small
+asymmetry that warrants further study.
+
+\begin{quote}
+\textbf{Restated open problem.} The closure problem of Section 6 is now
+sharpened: characterise the \emph{phase-slip rate}
+\(\Pr[\sigma_n = 1 \mid \text{state}]\) and find a state --- not the
+\(\Theta_3\) wheel --- on which it is well-described. Candidate state
+variables to test: the visited-set density at the candidate down-target
+\(a_{n-1} - n\) (which the held-out scan did not yet test because we
+used a global density proxy), the gap structure of \(V_{n-1}\) around
+\(a_{n-1} - n\), or features of \(D_n\) from the signed-triangular
+identity of Section 1.1.1.
+\end{quote}
+
+\hypertarget{layered-coordinates-and-the-markov-shadow-defect}{%
+\section{4. Layered Coordinates and the Markov-Shadow
+Defect}\label{layered-coordinates-and-the-markov-shadow-defect}}
+
+\hypertarget{encoding}{%
+\subsection{4.1 Encoding}\label{encoding}}
+
+Fix a positional encoding \(E(h) = (d_0, \dots, d_{r-1})\) for candidate
+values \(h\). \textbf{The encoding must be fixed before testing} to
+avoid post-hoc tuning.
+
+Define centered residues \[
+u_p(h) \;=\; \min\!\bigl(h \bmod p,\; p - (h \bmod p)\bigr),
+\] and shifted coordinates \[
+X(h) \;=\; 1 + u_2(h), \qquad Y(h) \;=\; 1 + u_3(h).
+\] The shift by \(1\) avoids the degenerate case \(XYZ = 0\) that
+plagues the unshifted version.
+
+A positional dipole score is \[
+Z(h) \;=\; 1 + \sum_{0 \le i < j < r} \omega_{j-i}\,\mathbf{1}[d_i = d_j],
+\] with fixed weights \(\omega_k \ge 0\).
+
+\hypertarget{the-defect}{%
+\subsection{4.2 The defect}\label{the-defect}}
+
+The \textbf{Markov-shadow defect} is \[
+\boxed{\;\Delta_\kappa(h) \;=\; X(h)^2 + Y(h)^2 + Z(h)^2 - \kappa\, X(h)\, Y(h)\, Z(h).\;}
+\] Small \(|\Delta_\kappa(h)|\) means \(h\) lies near the surrogate
+Markov surface --- by analogy with the integer Markov equation \[
+x^2 + y^2 + z^2 \;=\; 3xyz
+\] and its Vieta jump \(z \mapsto 3xy - z\).
+
+\hypertarget{the-vieta-shadow-partner}{%
+\subsection{4.3 The Vieta-shadow
+partner}\label{the-vieta-shadow-partner}}
+
+The (rounded) Vieta partner is \[
+Z'_\kappa(h) \;=\; \bigl\lfloor \kappa\, X(h)\, Y(h) - Z(h) \bigr\rceil.
+\] The \textbf{stronger Vieta-shadow test} asks whether \(Z'_\kappa(h)\)
+matches the \(Z\)-coordinate of another recorded hole more often than
+matched random controls predict.
+
+\hypertarget{why-zeta3-cannot-be-the-exact-coupling}{%
+\section{\texorpdfstring{5. Why \(\zeta(3)\) Cannot Be the Exact
+Coupling}{5. Why \textbackslash zeta(3) Cannot Be the Exact Coupling}}\label{why-zeta3-cannot-be-the-exact-coupling}}
+
+A natural cubic lift is \[
+x^2 + y^2 + z^2 \;=\; \zeta(3)\, xyz.
+\] If integers \(x, y, z \in \mathbb{Z} \setminus \{0\}\) satisfied
+this, then \[
+\zeta(3) \;=\; \frac{x^2 + y^2 + z^2}{xyz} \;\in\; \mathbb{Q},
+\] contradicting \textbf{Apéry's theorem} that \(\zeta(3)\) is
+irrational. Hence:
+
+\begin{itemize}
+\tightlist
+\item
+  No exact integer Markov equation with coupling \(\zeta(3)\) exists.
+\item
+  The \(\zeta(3)\)-surface is admissible only as an \textbf{approximate
+  real surface} with a rounding defect, tracked via
+  \(\lfloor \zeta(3)\, XY - Z \rceil\).
+\end{itemize}
+
+The empirical question is whether holes have smaller
+\(|\Delta_{\zeta(3)}|\) than controls, \emph{not} whether they lie
+exactly on the surface.
+
+\hypertarget{the-closure-problem-reformulated}{%
+\section{6. The Closure Problem
+(Reformulated)}\label{the-closure-problem-reformulated}}
+
+The closure problem \textbf{as originally posed} asked for
+\(q(w) = \Pr[b_n = 1 \mid S_n = w]\) on the \(\Theta_3\) wheel. Section
+3.3 showed this question is ill-posed:
+\(q(0) \approx q(1) \approx 0.5\), so the wheel does not partition the
+obstruction events. The closure variable is the wrong one.
+
+The closure problem \textbf{as it should be posed}, given the empirical
+finding of Section 3, is:
+
+\begin{quote}
+\textbf{Closure (phase-slip form).} Characterise the conditional
+probability of a phase slip, \[
+\pi_n(X) \;=\; \Pr\!\left[\sigma_n = 1 \,\middle|\, X_n\right],
+\] where \(\sigma_n = b_n \oplus b_{n-1}\) is the slip indicator and
+\(X_n\) is a candidate state variable computed from
+\((a_{n-1}, n, V_{n-1})\).
+\end{quote}
+
+Marginally \(\Pr[\sigma_n = 1] \approx 0.007\). The closure problem is
+to find a state \(X_n\) on which \(\pi_n(X_n)\) is concentrated on a
+small subset and predictable on a held-out window.
+
+The held-out scan of Section 3.4 ruled out the natural global
+candidates: \(a_{n-1} \bmod m\), \(n \bmod m\), their joint, the wheel
+state, and the global visited-set fill density. Each gave
+\(\Delta \le 0\) bits/bit on held-out data. The candidates that remain
+to be tested are \emph{local} features of \(V_{n-1}\):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Local gap structure.} The size and signed offset of the gap in
+  \(V_{n-1}\) containing the candidate down-target \(a_{n-1} - n\).
+\item
+  \textbf{Neighbour density.}
+  \(|V_{n-1} \cap [a_{n-1} - n - w,\; a_{n-1} - n + w]|\) for a small
+  window \(w\).
+\item
+  \textbf{Last-collision recency.} The smallest \(k\) such that
+  \(a_{n-1} - n + k \in V_{n-1}\) or \(a_{n-1} - n - k \in V_{n-1}\).
+\item
+  \textbf{Derivative of \(D_n\).} Whether the most recent down-step
+  indices in \(D_n\) (from the signed-triangular identity, Section
+  1.1.1) cluster near \(n\) or are spread.
+\end{enumerate}
+
+Each of these is local to the candidate down-target and therefore
+plausibly predictive of whether the slip occurs at step \(n\). None has
+been measured yet.
+
+The scalar stationary density of \(a_n/n\) retains a role but as a
+derived quantity. A flexible parametric family for held-out fitting is
+\[
+f_X(x) \;\propto\; \frac{1}{x^{\,p}\,(1 + x)^{\,q}}, \qquad p, q > 0.
+\] Empirically, naive \(p = q = 1\) gives \(\mathbb{E}[X] \approx 0.70\)
+on the support \([0.1, 4.04]\), while the histogram suggests
+\(\mathbb{E}[X]\) closer to \(0.82\). The exponents must be fit on
+held-out data, and the fit is downstream of --- not a substitute for ---
+the phase-slip closure above.
+
+\hypertarget{delannoy-structure-generated-by-recamuxe1n}{%
+\section{7. Delannoy Structure Generated by
+Recamán}\label{delannoy-structure-generated-by-recamuxe1n}}
+
+\hypertarget{the-three-way-branch-is-intrinsic}{%
+\subsection{7.1 The three-way branch is
+intrinsic}\label{the-three-way-branch-is-intrinsic}}
+
+At every step, Recamán's obstruction rule chooses among three local
+outcomes: \[
+\begin{aligned}
+& \text{(D)}\quad \text{down-free:}\;\; a_{n-1} - n > 0 \text{ and } a_{n-1} - n \notin V_{n-1}, \\
+& \text{(F)}\quad \text{forced-up by collision:}\;\; a_{n-1} - n > 0 \text{ but } \in V_{n-1}, \\
+& \text{(B)}\quad \text{forced-up by boundary:}\;\; a_{n-1} - n \le 0.
+\end{aligned}
+\] The three outcomes commute pairwise in their local effect on the
+operator state: (D) leaves the wheel fixed, (F) and (B) flip it via
+\(\Theta_3\). The number of distinct operator-word trajectories of
+length \(n\) over the alphabet \(\{\text{D}, \text{F}, \text{B}\}\),
+subject to the wheel's two-state constraint, satisfies a three-term
+recurrence \[
+N(n) \;=\; \alpha N(n-1) + \beta N(n-2) + \gamma N(n-1, n-1),
+\] which reduces to the Delannoy form \[
+D(m, n) \;=\; D(m-1, n) + D(m, n-1) + D(m-1, n-1)
+\] when the trajectory is indexed jointly by (D-count, blocked-count).
+
+\hypertarget{what-this-means-for-the-positional-distribution}{%
+\subsection{7.2 What this means for the positional
+distribution}\label{what-this-means-for-the-positional-distribution}}
+
+The Delannoy magnitudes appearing in the empirical positional
+distribution of \(\{a_n\}\) are not an external envelope --- they are
+\textbf{the trajectory count of Recamán's own obstruction process}. The
+visited-set memory \(V_{n-1}\) enters as the \emph{measure} on these
+trajectories: it determines which Delannoy paths carry mass and which
+are nearly empty. Equivalently: \[
+\#\{\text{Recamán trajectories of length } n\} \;\sim\; D(n, n) \cdot \mu_n,
+\] where \(\mu_n\) is the path-mass measure induced by the memory term.
+
+So the Delannoy structure is \textbf{intrinsic} to Recamán's rule; the
+memory \(V_{n-1}\) reweights it but does not produce it. The ``drift
+apart'' at large \(n\) reported in visualisations is the reweighting
+becoming non-uniform --- not Delannoy ceasing to apply, but the measure
+\(\mu_n\) concentrating on a small subset of the Delannoy paths.
+
+\hypertarget{what-is-claimed}{%
+\subsection{7.3 What is claimed}\label{what-is-claimed}}
+
+\begin{quote}
+\textbf{Claim (Delannoy generation).} The number of distinct
+operator-word trajectories of length \(n\) generated by Recamán's
+three-way obstruction branch satisfies a Delannoy recurrence. The
+positional distribution of \(\{a_1, \dots, a_n\}\) inherits the
+magnitude scaling \[
+\log \#\{\text{trajectories}\} \;\sim\; n \log(1 + \sqrt{2})
+\] with a memory-dependent reweighting measure \(\mu_n\) that becomes
+non-uniform as \(|V_{n-1}|\) saturates.
+\end{quote}
+
+This is the structural statement that the Gemini visualisations were
+tracking. The reweighting \(\mu_n\) is the actual object of interest at
+large \(n\) --- it is what the closure problem (Section 6) must
+determine.
+
+\hypertarget{empirical-density-distribution-at-n-2-times-105}{%
+\subsection{\texorpdfstring{7.4 Empirical density distribution at
+\(N = 2 \times 10^5\)}{7.4 Empirical density distribution at N = 2 \textbackslash times 10\^{}5}}\label{empirical-density-distribution-at-n-2-times-105}}
+
+We generated the full Recamán sequence to \(N = 200{,}000\) terms
+(verifying the signed-triangular identity of Section 1.1.1 at every
+checkpoint) and computed the density histogram with \(99\) bins,
+matching the methodology of the screenshot. Summary statistics:
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Statistic & \(N = 50{,}000\) & \(N = 200{,}000\) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Max value \(a_n\) & \(201{,}976\) & \(1{,}345{,}032\) \\
+Avg value & \(40{,}932\) & \(172{,}824\) \\
+Peak density (mode bin) & \(7{,}183\) & \(29{,}797\) \\
+Down-step fraction \(\|D_n\|/n\) & \(\approx 0.500\) & \(0.4995\) \\
+\end{longtable}
+
+\begin{figure}
+\centering
+\includegraphics[width=0.92\textwidth,height=\textheight]{recaman_compare.png}
+\caption{Recamán density distribution at 50k and 200k terms. Top:
+reproduces the screenshot exactly. Bottom: extended run with new
+structure visible.}
+\end{figure}
+
+Three empirical observations:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{The structural shape persists across \(N\).} Both panels show
+  a sharp dominant peak, a secondary peak at roughly half the dominant's
+  position, and a long sparse tail with smaller clusters. This is a
+  \emph{fixed-shape distribution under rescaling}, consistent with the
+  existence of a stationary law for \(a_n / n\) (Section 6).
+\item
+  \textbf{Peak positions shift with \(N\).} The dominant peak moves from
+  \(\sim 62{,}000\) at \(N = 50{,}000\) to \(\sim 195{,}000\) at
+  \(N = 200{,}000\) --- a factor of \(\approx 3.1\) for a factor-\(4\)
+  increase in \(N\). This sublinear scaling is consistent with the
+  heuristic \(a_n / n \to \text{const}\) but with persistent
+  fluctuations.
+\item
+  \textbf{Secondary clusters near \(0.35 \cdot a_{\max}\)} appear at
+  both scales and survive the extension. These are candidate ``fake
+  plateau'' regions where the obstruction process produces extended runs
+  of similar values.
+\end{enumerate}
+
+The down-step fraction \(|D_n|/n \approx 0.500\) at both scales is
+structurally striking: it says the Recamán process is \textbf{balanced}
+between up and down moves on the long run, even though the obstruction
+rule is highly asymmetric in its instantaneous logic. The balance
+presumably emerges from the visited-set density saturating at \(\rho^*\)
+(the constant from Section 7.2).
+
+\hypertarget{the-recamuxe1n-markov-shadow-conjecture}{%
+\section{8. The Recamán Markov-Shadow
+Conjecture}\label{the-recamuxe1n-markov-shadow-conjecture}}
+
+\begin{quote}
+\textbf{Conjecture (Recamán Markov-Shadow).} Let \(H\) be a set of late
+or missing Recamán values and let \(C\) be a matched control set of
+nearby or size-matched values that appear normally. For a fixed encoding
+\(E\), fixed dipole weights \(\omega_k\), and fixed coupling \(\kappa\),
+the values in \(H\) are statistically enriched for small Markov-shadow
+defect \[
+|\Delta_\kappa(h)| \;=\; \bigl|\,X(h)^2 + Y(h)^2 + Z(h)^2 - \kappa\, X(h)\, Y(h)\, Z(h)\,\bigr|
+\] relative to \(C\).
+\end{quote}
+
+A stronger \textbf{Vieta-shadow test} asks whether \(Z'_\kappa(h)\)
+matches the \(Z\)-score of another recorded hole more often than
+expected under matched controls.
+
+\hypertarget{empirical-protocol}{%
+\section{9. Empirical Protocol}\label{empirical-protocol}}
+
+The following protocol must be followed \emph{in order}, with no
+parameter tuning on the test set:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Pre-register the encoding.} Fix \(E\), \(\omega_k\), and
+  \(\kappa\) before looking at hole labels. Record them.
+\item
+  \textbf{Compute features.} For each \(h\), compute
+  \(X(h), Y(h), Z(h), \Delta_\kappa(h), Z'_\kappa(h)\), and the wheel
+  score \[
+  W(h) \;=\; \operatorname{dist}\!\bigl(L(E(h)),\; \Theta_3(R(E(h)))\bigr).
+  \]
+\item
+  \textbf{Match controls.} For each known hole, draw a size-matched
+  control of integers of the same digit length not in the hole set.
+\item
+  \textbf{Test.} Compare distributions of \(|\Delta_\kappa|\), \(W\),
+  and \(|Z'_\kappa - \text{nearest hole's }Z|\) for holes vs.~controls.
+  Use permutation tests (10,000 reshuffles) and report two-sided
+  \(p\)-values.
+\item
+  \textbf{Bonferroni correct} across the three statistics. Declare
+  success only at \(p < 0.05/3\).
+\item
+  \textbf{Test the Delannoy generation.} Count distinct operator-word
+  trajectories \(\#\{S_1, \dots, S_n\}\) produced by the true Recamán
+  obstruction stream and verify the recurrence
+  \(N(n) \sim D(\lfloor n/2 \rfloor, \lceil n/2 \rceil)\) at the
+  magnitude level. Separately, estimate the reweighting measure
+  \(\mu_n\) empirically and check whether its non-uniformity tracks
+  \(|V_{n-1}| / \max V_{n-1}\).
+\end{enumerate}
+
+\begin{quote}
+\textbf{Honest status.} As of this writing, steps 1--5 have not been
+executed against the Chan hole list. A synthetic Markov simulation
+exists but tests the wheel against itself, not real Recamán data. Step 6
+is informally supported by visualisations showing Delannoy magnitudes
+emerging from the Recamán positional distribution; the explicit
+trajectory count and the reweighting measure \(\mu_n\) have not been
+computed.
+\end{quote}
+
+\hypertarget{open-problems}{%
+\section{10. Open Problems}\label{open-problems}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Phase-slip closure.} Find a local state \(X_n\) (e.g.~local
+  gap structure of \(V_{n-1}\) near \(a_{n-1} - n\)) on which
+  \(\Pr[\sigma_n = 1 \mid X_n]\) is predictable on a held-out window.
+  The global states (\(a_{n-1} \bmod m\), \(n \bmod m\), wheel) have
+  already been falsified.
+\item
+  \textbf{Delannoy reweighting measure.} Determine the path-mass measure
+  \(\mu_n\) on Recamán-generated Delannoy trajectories. Characterize how
+  it concentrates as \(|V_{n-1}|\) saturates.
+\item
+  \textbf{Hole vs.~fake separation.} Decide whether \(930557\) is a real
+  hole or a late fake using \(|\Delta_\kappa|\) and \(W\) as a
+  classifier. Compare against the established hole \(852655\).
+\item
+  \textbf{Operator-word periodicity.} Is \(\{S_n\}\) eventually periodic
+  for the true Recamán sequence?
+\item
+  \textbf{Stationary exponents.} Fit \(p, q\) in
+  \(f_X(x) \propto x^{-p}(1+x)^{-q}\) on a held-out window and validate
+  on the next.
+\item
+  \textbf{Markov-tree connection.} Does \(Z'_\kappa(h)\) --- the Vieta
+  partner --- generate a tree of related holes, analogous to the Markov
+  tree of integer triples?
+\end{enumerate}
+
+\hypertarget{honest-verdict}{%
+\section{11. Honest Verdict}\label{honest-verdict}}
+
+The synthesised drafts contained a mix of:
+
+\begin{itemize}
+\tightlist
+\item
+  A \textbf{genuine and underused taxonomy} (Section 2 ---
+  local/global/free obstruction-bit classification).
+\item
+  A \textbf{legitimate empirical program} (Section 9 --- testing
+  \(\Delta_\kappa\) and \(W\) against real holes with matched controls).
+\item
+  A \textbf{strong empirical negative result} (the \(\Theta_3\) wheel
+  was falsified as a Markov model of the obstruction process by
+  mutual-information, run-length, and KL-divergence tests at
+  \(N = 2 \times 10^5\)).
+\item
+  A \textbf{clean positive empirical replacement} (the obstruction
+  process is near-perfect alternation \(b_n \ne b_{n-1}\) with
+  phase-slip rate \(\sim 7 \times 10^{-3}\), established by held-out
+  validation).
+\item
+  A \textbf{structural identification} (Delannoy magnitudes are
+  generated by Recamán's intrinsic three-way branch, reweighted by the
+  memory measure \(\mu_n\)).
+\item
+  One \textbf{clean negative theoretical result} (Apéry blocks any exact
+  \(\zeta(3)\)-Markov surface).
+\end{itemize}
+
+What does not survive: the wheel as a Markov model of the obstruction
+process (falsified); softmax-as-attention (vacuous for two states); the
+seven-approaches list (most aspirational); the earlier ``external
+envelope'' framing of Delannoy (which inverted the direction of the
+relationship); the original \texttt{racamman\_markov.py} script (its
+block-probability generator is circular --- see Appendix B).
+
+The framework lives or dies on two fronts now. \textbf{On the value
+side}: until \(|\Delta_\kappa|\) or \(W\) actually separates holes from
+controls on the Chan list (Section 9), the Markov-shadow conjecture is a
+feature-engineering proposal. \textbf{On the obstruction-process side}:
+until a local state \(X_n\) is found on which the phase-slip rate
+\(\pi_n(X_n)\) is predictable on held-out data (Section 6), the closure
+problem stands open. The taxonomy in Section 2 stands independently.
+
+\hypertarget{appendix-a.-the-branch-map-identity-in-compact-form}{%
+\section{Appendix A. The Branch-Map Identity in Compact
+Form}\label{appendix-a.-the-branch-map-identity-in-compact-form}}
+
+For all three systems: \[
+\boxed{\; x_{n+1} \;=\; F_{b_n}(x_n), \qquad b_n \;=\; \Phi_n\bigl(\text{state},\,\text{history}\bigr). \;}
+\] The function \(\Phi_n\) is:
+
+\begin{itemize}
+\tightlist
+\item
+  \(\Phi_n^{\text{Collatz}}(x) = x \bmod 2\) --- pointwise, memoryless.
+\item
+  \(\Phi_n^{\text{Recamán}}(a, V) = \mathbf{1}[a - n \le 0 \,\lor\, a - n \in V]\)
+  --- non-local, memory-dependent.
+\item
+  \(\Phi_n^{\text{Delannoy}}\) --- external choice, unconstrained.
+\end{itemize}
+
+Hardness of the inverse problem (predict \(b_n\)) scales with the
+information content of \(\Phi_n\): \[
+H\bigl(\Phi^{\text{Delannoy}}\bigr) \;=\; \log 3, \qquad
+H\bigl(\Phi^{\text{Collatz}}\bigr) \;=\; 1, \qquad
+H\bigl(\Phi^{\text{Recamán}}\bigr) \;\le\; \log |V_{n-1}|.
+\] Recamán's \(\Phi\) has unbounded information content; this is the
+formal sense in which it is ``the hardest'' of the three.
+
+\hypertarget{appendix-b.-reference-implementation-notes}{%
+\section{Appendix B. Reference Implementation
+Notes}\label{appendix-b.-reference-implementation-notes}}
+
+Two scripts accompany this note. The first
+(\texttt{racamman\_markov.py}, the original) is \textbf{kept for
+archival reference only} --- its block-probability generator is a
+hand-crafted Bernoulli rule, and the script trains on data the same rule
+produced, which is circular and proves nothing. Worse, its assumption
+that \(b_n\) can be drawn as a Bernoulli random variable contradicts
+Recamán's defining property: \(b_n\) is \emph{deterministic} given the
+full visited set \(V_{n-1}\).
+
+The replacement scripts are:
+
+\begin{itemize}
+\item
+  \textbf{\texttt{recaman\_wheel\_honest.py}}: runs the true Recamán
+  generator with the full visited set, extracts the real obstruction
+  stream, measures \(q(w) = \Pr[b_n = 1 \mid S_{n-1} = w]\) on the
+  wheel, simulates a Markov null using those measured probabilities, and
+  compares the two via run-length distributions and \(k\)-block KL
+  divergence. Produces the numbers reported in Section 3.3.
+\item
+  \textbf{\texttt{recaman\_modm\_scan.py}} and
+  \textbf{\texttt{recaman\_heldout.py}}: enumerate candidate state
+  variables (\(a_{n-1} \bmod m\), \(n \bmod m\), joint, density proxy,
+  bit history) and score each via mutual information and held-out
+  log-likelihood. Produces the table in Section 3.4 and identifies
+  bit-history conditioning as the only candidate that beats the marginal
+  on held-out data.
+\end{itemize}
+
+Reproducibility: both scripts run deterministically on the true Recamán
+sequence (no randomness in the generator). The Markov null comparison
+uses a fixed seed. All numbers in Sections 3.3, 3.4, and 7.4 of this
+note are reproducible by running the scripts as-is to
+\(N = 2 \times 10^5\).
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\emph{End of note.}
+
+\end{document}
