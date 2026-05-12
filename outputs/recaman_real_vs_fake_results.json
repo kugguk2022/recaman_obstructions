@@ -21,6 +21,171 @@
     "late_digit_lengths": "4d:1, 5d:748, 6d:73383, 7d:25868",
     "still_digit_lengths": "4d:1, 5d:748, 6d:73383, 7d:25868"
   },
+  "feature_sets": {
+    "value42_names": [
+      "length",
+      "digit_sum",
+      "alt_sum",
+      "first_digit",
+      "last1",
+      "last2",
+      "last3",
+      "distinct_digits",
+      "even_digit_count",
+      "odd_digit_count",
+      "c321",
+      "c210",
+      "basis_lift_3",
+      "basis_lift_2",
+      "basis_lift_1",
+      "digit_count_0",
+      "digit_count_1",
+      "digit_count_2",
+      "digit_count_3",
+      "digit_count_4",
+      "digit_count_5",
+      "digit_count_6",
+      "digit_count_7",
+      "digit_count_8",
+      "digit_count_9",
+      "mod_2",
+      "mod_3",
+      "mod_5",
+      "mod_7",
+      "mod_11",
+      "mod_13",
+      "mod_17",
+      "mod_19",
+      "mod_23",
+      "mod_29",
+      "mod_31",
+      "eq_count_3_0",
+      "eq_count_2_0",
+      "eq_count_1_0",
+      "eq_count_321_210",
+      "digit_sum_mod3_zero",
+      "alt_sum_mod3_zero"
+    ],
+    "local_gap_names": [
+      "relative_value_h_over_H1",
+      "residual_h_minus_N1",
+      "left_gap",
+      "right_gap",
+      "gap_size",
+      "position_in_gap",
+      "distance_to_nearest_boundary",
+      "local_fill_65",
+      "local_fill_257"
+    ],
+    "local_gap_pure_names": [
+      "left_gap",
+      "right_gap",
+      "gap_size",
+      "position_in_gap",
+      "distance_to_nearest_boundary",
+      "local_fill_65",
+      "local_fill_257"
+    ],
+    "value42_minus_scale_names": [
+      "digit_sum",
+      "alt_sum",
+      "last1",
+      "last2",
+      "last3",
+      "distinct_digits",
+      "even_digit_count",
+      "odd_digit_count",
+      "c321",
+      "c210",
+      "basis_lift_3",
+      "basis_lift_2",
+      "basis_lift_1",
+      "digit_count_0",
+      "digit_count_1",
+      "digit_count_2",
+      "digit_count_3",
+      "digit_count_4",
+      "digit_count_5",
+      "digit_count_6",
+      "digit_count_7",
+      "digit_count_8",
+      "digit_count_9",
+      "mod_2",
+      "mod_3",
+      "mod_5",
+      "mod_7",
+      "mod_11",
+      "mod_13",
+      "mod_17",
+      "mod_19",
+      "mod_23",
+      "mod_29",
+      "mod_31",
+      "eq_count_3_0",
+      "eq_count_2_0",
+      "eq_count_1_0",
+      "eq_count_321_210",
+      "digit_sum_mod3_zero",
+      "alt_sum_mod3_zero"
+    ],
+    "value42_plus_local_deconf_names": [
+      "digit_sum",
+      "alt_sum",
+      "last1",
+      "last2",
+      "last3",
+      "distinct_digits",
+      "even_digit_count",
+      "odd_digit_count",
+      "c321",
+      "c210",
+      "basis_lift_3",
+      "basis_lift_2",
+      "basis_lift_1",
+      "digit_count_0",
+      "digit_count_1",
+      "digit_count_2",
+      "digit_count_3",
+      "digit_count_4",
+      "digit_count_5",
+      "digit_count_6",
+      "digit_count_7",
+      "digit_count_8",
+      "digit_count_9",
+      "mod_2",
+      "mod_3",
+      "mod_5",
+      "mod_7",
+      "mod_11",
+      "mod_13",
+      "mod_17",
+      "mod_19",
+      "mod_23",
+      "mod_29",
+      "mod_31",
+      "eq_count_3_0",
+      "eq_count_2_0",
+      "eq_count_1_0",
+      "eq_count_321_210",
+      "digit_sum_mod3_zero",
+      "alt_sum_mod3_zero",
+      "left_gap",
+      "right_gap",
+      "gap_size",
+      "position_in_gap",
+      "distance_to_nearest_boundary",
+      "local_fill_65",
+      "local_fill_257"
+    ],
+    "dropped_local_frontier_names": [
+      "relative_value_h_over_H1",
+      "residual_h_minus_N1"
+    ],
+    "dropped_value_scale_names": [
+      "first_digit",
+      "length"
+    ]
+  },
   "models": {
     "value42_rf": {
       "feature_dim": 42,
@@ -33,6 +198,39 @@
       ],
       "mean_auc": 0.801094487
     },
+    "value42_minus_scale_rf": {
+      "feature_dim": 40,
+      "fold_aucs": [
+        0.69835328,
+        0.7004674075,
+        0.697013815,
+        0.6904964925000001,
+        0.69718352125
+      ],
+      "mean_auc": 0.6967029032500001
+    },
+    "local_gap_rf": {
+      "feature_dim": 9,
+      "fold_aucs": [
+        0.9778339837499999,
+        0.97808646875,
+        0.97759342125,
+        0.9772821625,
+        0.9771747562499999
+      ],
+      "mean_auc": 0.9775941585
+    },
+    "local_gap_pure_rf": {
+      "feature_dim": 7,
+      "fold_aucs": [
+        0.93030794375,
+        0.929946535,
+        0.9306885400000001,
+        0.92898194625,
+        0.92928986375
+      ],
+      "mean_auc": 0.92984296575
+    },
     "value42_plus_local_rf": {
       "feature_dim": 51,
       "fold_aucs": [
@@ -42,58 +240,68 @@
         0.9570810775,
         0.9571107849999999
       ],
-      "mean_auc": 0.957384487,
-      "lift_over_value42": 0.15629000000000004
+      "mean_auc": 0.957384487
+    },
+    "value42_plus_local_deconf_rf": {
+      "feature_dim": 47,
+      "fold_aucs": [
+        0.9031610225,
+        0.9039132599999999,
+        0.90373294,
+        0.898821635,
+        0.901480735
+      ],
+      "mean_auc": 0.9022219184999999
     }
   },
-  "top_features_value42_plus_local": [
-    {
-      "name": "residual_h_minus_N1",
-      "importance": 0.2101924298056439
-    },
-    {
-      "name": "relative_value_h_over_H1",
-      "importance": 0.2048684663304824
-    },
-    {
-      "name": "first_digit",
-      "importance": 0.1358352342412702
-    },
+  "top_features_value42_plus_local_deconf": [
     {
       "name": "gap_size",
-      "importance": 0.11447319782961801
+      "importance": 0.28286356234887916
     },
     {
       "name": "right_gap",
-      "importance": 0.09074109775528018
+      "importance": 0.1621004735223419
     },
     {
       "name": "left_gap",
-      "importance": 0.05637660682593125
+      "importance": 0.11689081396464433
     },
     {
       "name": "distance_to_nearest_boundary",
-      "importance": 0.05549714590082252
+      "importance": 0.11053859667787576
     },
     {
       "name": "position_in_gap",
-      "importance": 0.04296597084513003
-    },
-    {
-      "name": "length",
-      "importance": 0.017549141828303066
+      "importance": 0.08501025391138263
     },
     {
       "name": "digit_count_1",
-      "importance": 0.01715431576686492
+      "importance": 0.04503805226782244
     },
     {
       "name": "basis_lift_3",
-      "importance": 0.006305476203925182
+      "importance": 0.021177164213136167
     },
     {
       "name": "basis_lift_2",
-      "importance": 0.004654907006000484
+      "importance": 0.02000894058786836
+    },
+    {
+      "name": "c210",
+      "importance": 0.01425213468397028
+    },
+    {
+      "name": "c321",
+      "importance": 0.013101712449791362
+    },
+    {
+      "name": "digit_count_2",
+      "importance": 0.012704931990697657
+    },
+    {
+      "name": "basis_lift_1",
+      "importance": 0.012249988392411457
     }
   ]
 }
