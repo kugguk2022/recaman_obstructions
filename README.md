@@ -1,4 +1,4 @@
-# Racaman Obstruction
+# Récaman Obstruction
 
 This repo is organized around three top-level folders:
 
