@@ -1,5 +1,7 @@
-/recaman_final_math.docx
-/recaman_final_math.pdf
-/recaman_final_math.tex
-/Recaman_Wheel_Validation.docx
-/__pycache__
+__pycache__/
+*.py[cod]
+
+/supporting_docs/recaman_final_math.docx
+/supporting_docs/recaman_final_math.pdf
+/supporting_docs/recaman_final_math.tex
+/supporting_docs/Recaman_Wheel_Validation.docx
