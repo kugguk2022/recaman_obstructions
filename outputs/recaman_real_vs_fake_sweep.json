@@ -1,0 +1,1313 @@
+{
+  "settings": {
+    "sweep": [
+      {
+        "n1": 50000,
+        "n2": 250000
+      },
+      {
+        "n1": 100000,
+        "n2": 500000
+      },
+      {
+        "n1": 150000,
+        "n2": 750000
+      },
+      {
+        "n1": 200000,
+        "n2": 1000000
+      }
+    ],
+    "max_per_class": 50000,
+    "folds": 5,
+    "seed": 7,
+    "n_estimators": 300,
+    "max_depth": 8
+  },
+  "runs": [
+    {
+      "horizons": {
+        "n1": 50000,
+        "n2": 250000,
+        "h1": 201976,
+        "terminal_value_n1": 60760,
+        "terminal_value_n2": 109648,
+        "visited_n1": 36135,
+        "visited_n2": 178702,
+        "unvisited_at_n1": 165842,
+        "late_arrivals": 89526,
+        "still_unvisited": 76316,
+        "late_fraction": 0.5398270643142268,
+        "delay_mean": 88727.78177289279,
+        "delay_median": 83474.0,
+        "delay_p90": 171509.0
+      },
+      "sample": {
+        "per_class": 50000,
+        "total": 100000,
+        "late_digit_lengths": "3d:1, 4d:14, 5d:20409, 6d:29576",
+        "still_digit_lengths": "3d:1, 4d:14, 5d:20409, 6d:29576"
+      },
+      "models": {
+        "value42_rf": {
+          "feature_dim": 42,
+          "fold_aucs": [
+            0.70244434,
+            0.70335547,
+            0.69873551,
+            0.71351951,
+            0.7064991700000001
+          ],
+          "mean_auc": 0.7049108000000001
+        },
+        "value42_minus_scale_rf": {
+          "feature_dim": 40,
+          "fold_aucs": [
+            0.6610072,
+            0.66028536,
+            0.65957599,
+            0.66663186,
+            0.65848855
+          ],
+          "mean_auc": 0.6611977920000001
+        },
+        "local_gap_rf": {
+          "feature_dim": 9,
+          "fold_aucs": [
+            0.98448088,
+            0.983173105,
+            0.9827784249999999,
+            0.984251155,
+            0.9816883649999999
+          ],
+          "mean_auc": 0.983274386
+        },
+        "local_gap_pure_rf": {
+          "feature_dim": 7,
+          "fold_aucs": [
+            0.93187495,
+            0.92758269,
+            0.9280783450000001,
+            0.926738765,
+            0.9282347549999999
+          ],
+          "mean_auc": 0.928501901
+        },
+        "value42_plus_local_rf": {
+          "feature_dim": 51,
+          "fold_aucs": [
+            0.97142405,
+            0.9653908199999999,
+            0.9663406299999999,
+            0.9694799900000001,
+            0.96709162
+          ],
+          "mean_auc": 0.9679454219999999
+        },
+        "value42_plus_local_deconf_rf": {
+          "feature_dim": 47,
+          "fold_aucs": [
+            0.9075654100000001,
+            0.90167193,
+            0.9030007999999999,
+            0.90285998,
+            0.9017539699999998
+          ],
+          "mean_auc": 0.9033704180000001
+        }
+      },
+      "summary": {
+        "value42_auc": 0.7049108000000001,
+        "value42_minus_scale_auc": 0.6611977920000001,
+        "local_gap_auc": 0.983274386,
+        "local_gap_pure_auc": 0.928501901,
+        "value42_plus_local_auc": 0.9679454219999999,
+        "value42_plus_local_deconf_auc": 0.9033704180000001,
+        "local_gap_pure_lift_over_value42": 0.2235911009999999,
+        "deconf_combined_lift_over_value42": 0.198459618,
+        "full_combined_lift_over_value42": 0.26303462199999983
+      },
+      "top_features_value42_plus_local_deconf": [
+        {
+          "name": "right_gap",
+          "importance": 0.19734768842455905
+        },
+        {
+          "name": "gap_size",
+          "importance": 0.18422999801063267
+        },
+        {
+          "name": "position_in_gap",
+          "importance": 0.16090592900121248
+        },
+        {
+          "name": "left_gap",
+          "importance": 0.12334239278146285
+        },
+        {
+          "name": "distance_to_nearest_boundary",
+          "importance": 0.07946677445354348
+        },
+        {
+          "name": "last3",
+          "importance": 0.026351019930147525
+        },
+        {
+          "name": "digit_count_6",
+          "importance": 0.022772213917584782
+        },
+        {
+          "name": "local_fill_257",
+          "importance": 0.021009800979103658
+        },
+        {
+          "name": "alt_sum",
+          "importance": 0.014229328605386718
+        },
+        {
+          "name": "digit_count_3",
+          "importance": 0.012009269619284708
+        },
+        {
+          "name": "digit_count_1",
+          "importance": 0.01185783020628048
+        },
+        {
+          "name": "odd_digit_count",
+          "importance": 0.010911215394368014
+        }
+      ],
+      "feature_sets": {
+        "value42_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero"
+        ],
+        "local_gap_names": [
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "local_gap_pure_names": [
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_deconf_names": [
+          "digit_sum",
+          "alt_sum",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ]
+      }
+    },
+    {
+      "horizons": {
+        "n1": 100000,
+        "n2": 500000,
+        "h1": 592216,
+        "terminal_value_n1": 199508,
+        "terminal_value_n2": 626684,
+        "visited_n1": 74253,
+        "visited_n2": 361810,
+        "unvisited_at_n1": 517964,
+        "late_arrivals": 182491,
+        "still_unvisited": 335473,
+        "late_fraction": 0.3523237136171626,
+        "delay_mean": 167284.76508978524,
+        "delay_median": 149254.0,
+        "delay_p90": 339303.0
+      },
+      "sample": {
+        "per_class": 50000,
+        "total": 100000,
+        "late_digit_lengths": "4d:6, 5d:4658, 6d:45336",
+        "still_digit_lengths": "4d:6, 5d:4658, 6d:45336"
+      },
+      "models": {
+        "value42_rf": {
+          "feature_dim": 42,
+          "fold_aucs": [
+            0.78571262,
+            0.7870878699999999,
+            0.78279539,
+            0.78380426,
+            0.78898249
+          ],
+          "mean_auc": 0.785676526
+        },
+        "value42_minus_scale_rf": {
+          "feature_dim": 40,
+          "fold_aucs": [
+            0.675393,
+            0.6822011,
+            0.67543069,
+            0.6739225900000001,
+            0.67876642
+          ],
+          "mean_auc": 0.67714276
+        },
+        "local_gap_rf": {
+          "feature_dim": 9,
+          "fold_aucs": [
+            0.971663085,
+            0.9726515050000001,
+            0.96899906,
+            0.97277399,
+            0.971876895
+          ],
+          "mean_auc": 0.971592907
+        },
+        "local_gap_pure_rf": {
+          "feature_dim": 7,
+          "fold_aucs": [
+            0.93458181,
+            0.93660051,
+            0.93505788,
+            0.9351793700000001,
+            0.9349820849999999
+          ],
+          "mean_auc": 0.9352803310000001
+        },
+        "value42_plus_local_rf": {
+          "feature_dim": 51,
+          "fold_aucs": [
+            0.94805232,
+            0.95138177,
+            0.9474833200000001,
+            0.9494675799999999,
+            0.95043649
+          ],
+          "mean_auc": 0.9493642959999999
+        },
+        "value42_plus_local_deconf_rf": {
+          "feature_dim": 47,
+          "fold_aucs": [
+            0.89733519,
+            0.90251778,
+            0.89723161,
+            0.89712279,
+            0.89935522
+          ],
+          "mean_auc": 0.898712518
+        }
+      },
+      "summary": {
+        "value42_auc": 0.785676526,
+        "value42_minus_scale_auc": 0.67714276,
+        "local_gap_auc": 0.971592907,
+        "local_gap_pure_auc": 0.9352803310000001,
+        "value42_plus_local_auc": 0.9493642959999999,
+        "value42_plus_local_deconf_auc": 0.898712518,
+        "local_gap_pure_lift_over_value42": 0.14960380500000003,
+        "deconf_combined_lift_over_value42": 0.11303599199999992,
+        "full_combined_lift_over_value42": 0.1636877699999999
+      },
+      "top_features_value42_plus_local_deconf": [
+        {
+          "name": "gap_size",
+          "importance": 0.2621603310806195
+        },
+        {
+          "name": "right_gap",
+          "importance": 0.1664398812768972
+        },
+        {
+          "name": "distance_to_nearest_boundary",
+          "importance": 0.1413691401163625
+        },
+        {
+          "name": "left_gap",
+          "importance": 0.1257554836667632
+        },
+        {
+          "name": "position_in_gap",
+          "importance": 0.09487750428389471
+        },
+        {
+          "name": "basis_lift_1",
+          "importance": 0.020668264373888377
+        },
+        {
+          "name": "basis_lift_3",
+          "importance": 0.02065992155325972
+        },
+        {
+          "name": "basis_lift_2",
+          "importance": 0.020004801774098836
+        },
+        {
+          "name": "c321",
+          "importance": 0.01830752032619434
+        },
+        {
+          "name": "digit_count_3",
+          "importance": 0.013659087041502871
+        },
+        {
+          "name": "digit_count_1",
+          "importance": 0.012339330857587868
+        },
+        {
+          "name": "digit_count_4",
+          "importance": 0.011354143411302257
+        }
+      ],
+      "feature_sets": {
+        "value42_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero"
+        ],
+        "local_gap_names": [
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "local_gap_pure_names": [
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_deconf_names": [
+          "digit_sum",
+          "alt_sum",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ]
+      }
+    },
+    {
+      "horizons": {
+        "n1": 150000,
+        "n2": 750000,
+        "h1": 881467,
+        "terminal_value_n1": 193984,
+        "terminal_value_n2": 1923838,
+        "visited_n1": 108703,
+        "visited_n2": 546165,
+        "unvisited_at_n1": 772765,
+        "late_arrivals": 290109,
+        "still_unvisited": 482656,
+        "late_fraction": 0.37541684729510266,
+        "delay_mean": 260178.9681085385,
+        "delay_median": 236263.0,
+        "delay_p90": 524752.4
+      },
+      "sample": {
+        "per_class": 50000,
+        "total": 100000,
+        "late_digit_lengths": "4d:3, 5d:873, 6d:49124",
+        "still_digit_lengths": "4d:3, 5d:873, 6d:49124"
+      },
+      "models": {
+        "value42_rf": {
+          "feature_dim": 42,
+          "fold_aucs": [
+            0.7632658300000001,
+            0.76240871,
+            0.76286634,
+            0.75827058,
+            0.7665153200000001
+          ],
+          "mean_auc": 0.7626653560000001
+        },
+        "value42_minus_scale_rf": {
+          "feature_dim": 40,
+          "fold_aucs": [
+            0.67351411,
+            0.67836801,
+            0.6714428800000001,
+            0.66864168,
+            0.67656342
+          ],
+          "mean_auc": 0.6737060199999999
+        },
+        "local_gap_rf": {
+          "feature_dim": 9,
+          "fold_aucs": [
+            0.978674205,
+            0.977259325,
+            0.9792625749999999,
+            0.9774108100000001,
+            0.9803882599999999
+          ],
+          "mean_auc": 0.978599035
+        },
+        "local_gap_pure_rf": {
+          "feature_dim": 7,
+          "fold_aucs": [
+            0.8985581400000001,
+            0.895950545,
+            0.89364425,
+            0.893460265,
+            0.900377255
+          ],
+          "mean_auc": 0.896398091
+        },
+        "value42_plus_local_rf": {
+          "feature_dim": 51,
+          "fold_aucs": [
+            0.94887789,
+            0.9470460999999999,
+            0.9511721399999999,
+            0.94792404,
+            0.9496280700000002
+          ],
+          "mean_auc": 0.948929648
+        },
+        "value42_plus_local_deconf_rf": {
+          "feature_dim": 47,
+          "fold_aucs": [
+            0.87679989,
+            0.8740320100000001,
+            0.87607488,
+            0.8695017999999999,
+            0.8743196400000001
+          ],
+          "mean_auc": 0.874145644
+        }
+      },
+      "summary": {
+        "value42_auc": 0.7626653560000001,
+        "value42_minus_scale_auc": 0.6737060199999999,
+        "local_gap_auc": 0.978599035,
+        "local_gap_pure_auc": 0.896398091,
+        "value42_plus_local_auc": 0.948929648,
+        "value42_plus_local_deconf_auc": 0.874145644,
+        "local_gap_pure_lift_over_value42": 0.13373273499999994,
+        "deconf_combined_lift_over_value42": 0.11148028799999998,
+        "full_combined_lift_over_value42": 0.18626429199999994
+      },
+      "top_features_value42_plus_local_deconf": [
+        {
+          "name": "gap_size",
+          "importance": 0.2725249412070185
+        },
+        {
+          "name": "right_gap",
+          "importance": 0.23364245405789932
+        },
+        {
+          "name": "left_gap",
+          "importance": 0.1416894453917687
+        },
+        {
+          "name": "distance_to_nearest_boundary",
+          "importance": 0.1212481083939108
+        },
+        {
+          "name": "position_in_gap",
+          "importance": 0.0808514804731451
+        },
+        {
+          "name": "digit_count_7",
+          "importance": 0.018121721121671746
+        },
+        {
+          "name": "digit_count_5",
+          "importance": 0.016307352038462432
+        },
+        {
+          "name": "digit_sum",
+          "importance": 0.010449326666161718
+        },
+        {
+          "name": "digit_count_1",
+          "importance": 0.009852397841161264
+        },
+        {
+          "name": "digit_count_6",
+          "importance": 0.009258146055820215
+        },
+        {
+          "name": "alt_sum",
+          "importance": 0.007207766460855289
+        },
+        {
+          "name": "basis_lift_3",
+          "importance": 0.0067370875456464595
+        }
+      ],
+      "feature_sets": {
+        "value42_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero"
+        ],
+        "local_gap_names": [
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "local_gap_pure_names": [
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_deconf_names": [
+          "digit_sum",
+          "alt_sum",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ]
+      }
+    },
+    {
+      "horizons": {
+        "n1": 200000,
+        "n2": 1000000,
+        "h1": 1345032,
+        "terminal_value_n1": 161078,
+        "terminal_value_n2": 2057164,
+        "visited_n1": 146146,
+        "visited_n2": 736749,
+        "unvisited_at_n1": 1198887,
+        "late_arrivals": 422977,
+        "still_unvisited": 775910,
+        "late_fraction": 0.3528080628115911,
+        "delay_mean": 358346.9195440887,
+        "delay_median": 341761.0,
+        "delay_p90": 699724.8
+      },
+      "sample": {
+        "per_class": 50000,
+        "total": 100000,
+        "late_digit_lengths": "5d:374, 6d:36692, 7d:12934",
+        "still_digit_lengths": "5d:374, 6d:36692, 7d:12934"
+      },
+      "models": {
+        "value42_rf": {
+          "feature_dim": 42,
+          "fold_aucs": [
+            0.79778607,
+            0.7992573700000001,
+            0.8031251600000001,
+            0.80217958,
+            0.7970258499999999
+          ],
+          "mean_auc": 0.799874806
+        },
+        "value42_minus_scale_rf": {
+          "feature_dim": 40,
+          "fold_aucs": [
+            0.69092857,
+            0.6963316399999999,
+            0.69747278,
+            0.6915205299999999,
+            0.6912347
+          ],
+          "mean_auc": 0.693497644
+        },
+        "local_gap_rf": {
+          "feature_dim": 9,
+          "fold_aucs": [
+            0.97723713,
+            0.9763246149999998,
+            0.9779013450000001,
+            0.9780097750000001,
+            0.9753695750000001
+          ],
+          "mean_auc": 0.976968488
+        },
+        "local_gap_pure_rf": {
+          "feature_dim": 7,
+          "fold_aucs": [
+            0.9291385,
+            0.9286980300000001,
+            0.930293805,
+            0.930711685,
+            0.92512023
+          ],
+          "mean_auc": 0.9287924499999999
+        },
+        "value42_plus_local_rf": {
+          "feature_dim": 51,
+          "fold_aucs": [
+            0.9559167599999999,
+            0.95578579,
+            0.95739226,
+            0.9578207599999999,
+            0.95363189
+          ],
+          "mean_auc": 0.9561094919999998
+        },
+        "value42_plus_local_deconf_rf": {
+          "feature_dim": 47,
+          "fold_aucs": [
+            0.8981519500000001,
+            0.8998865600000001,
+            0.89957083,
+            0.90031909,
+            0.89397673
+          ],
+          "mean_auc": 0.8983810320000002
+        }
+      },
+      "summary": {
+        "value42_auc": 0.799874806,
+        "value42_minus_scale_auc": 0.693497644,
+        "local_gap_auc": 0.976968488,
+        "local_gap_pure_auc": 0.9287924499999999,
+        "value42_plus_local_auc": 0.9561094919999998,
+        "value42_plus_local_deconf_auc": 0.8983810320000002,
+        "local_gap_pure_lift_over_value42": 0.12891764399999983,
+        "deconf_combined_lift_over_value42": 0.09850622600000014,
+        "full_combined_lift_over_value42": 0.1562346859999998
+      },
+      "top_features_value42_plus_local_deconf": [
+        {
+          "name": "gap_size",
+          "importance": 0.2771781089159134
+        },
+        {
+          "name": "right_gap",
+          "importance": 0.16168703194094333
+        },
+        {
+          "name": "left_gap",
+          "importance": 0.11340790514317077
+        },
+        {
+          "name": "distance_to_nearest_boundary",
+          "importance": 0.10764355972089393
+        },
+        {
+          "name": "position_in_gap",
+          "importance": 0.09068874938898777
+        },
+        {
+          "name": "digit_count_1",
+          "importance": 0.04815332810079191
+        },
+        {
+          "name": "basis_lift_3",
+          "importance": 0.02184728646688489
+        },
+        {
+          "name": "basis_lift_2",
+          "importance": 0.018366698522719042
+        },
+        {
+          "name": "c210",
+          "importance": 0.014572405425487921
+        },
+        {
+          "name": "basis_lift_1",
+          "importance": 0.012856935373885174
+        },
+        {
+          "name": "digit_sum",
+          "importance": 0.012803442626403181
+        },
+        {
+          "name": "digit_count_5",
+          "importance": 0.012262834255388285
+        }
+      ],
+      "feature_sets": {
+        "value42_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero"
+        ],
+        "local_gap_names": [
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "local_gap_pure_names": [
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_names": [
+          "length",
+          "digit_sum",
+          "alt_sum",
+          "first_digit",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "relative_value_h_over_H1",
+          "residual_h_minus_N1",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ],
+        "value42_plus_local_deconf_names": [
+          "digit_sum",
+          "alt_sum",
+          "last1",
+          "last2",
+          "last3",
+          "distinct_digits",
+          "even_digit_count",
+          "odd_digit_count",
+          "c321",
+          "c210",
+          "basis_lift_3",
+          "basis_lift_2",
+          "basis_lift_1",
+          "digit_count_0",
+          "digit_count_1",
+          "digit_count_2",
+          "digit_count_3",
+          "digit_count_4",
+          "digit_count_5",
+          "digit_count_6",
+          "digit_count_7",
+          "digit_count_8",
+          "digit_count_9",
+          "mod_2",
+          "mod_3",
+          "mod_5",
+          "mod_7",
+          "mod_11",
+          "mod_13",
+          "mod_17",
+          "mod_19",
+          "mod_23",
+          "mod_29",
+          "mod_31",
+          "eq_count_3_0",
+          "eq_count_2_0",
+          "eq_count_1_0",
+          "eq_count_321_210",
+          "digit_sum_mod3_zero",
+          "alt_sum_mod3_zero",
+          "left_gap",
+          "right_gap",
+          "gap_size",
+          "position_in_gap",
+          "distance_to_nearest_boundary",
+          "local_fill_65",
+          "local_fill_257"
+        ]
+      }
+    }
+  ]
+}
