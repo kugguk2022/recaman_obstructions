@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Recaman Obstructions
 =======
 # Récaman Obstruction
@@ -12,6 +13,19 @@ This repo studies the obstruction structure around the Recaman sequence from thr
 
 The goal is not just to get high classification scores. The goal is to find signals that survive honest temporal validation and remain interpretable in terms of the Recaman rule.
 
+=======
+Récaman Obstructions
+
+
+This repo studies the obstruction structure around the Recaman sequence from three angles:
+
+1. value-side obstruction classification on a curated list of missing / obstructed integers,
+2. process-side validation of the Recaman obstruction bit itself,
+3. geometric / phase-space visualization of the trajectory.
+
+The goal is not just to get high classification scores. The goal is to find signals that survive honest temporal validation and remain interpretable in terms of the Recaman rule.
+
+>>>>>>> b71fc54184e034d463d42479d48bb7474ae71a0b
 ## 3D Snapshot
 
 Current 3D phase-space render from `scripts/recaman_phase_space_3d.py`:
