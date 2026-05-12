@@ -87,6 +87,14 @@ class ModelResult:
         return float(np.mean(self.aucs))
 
 
+def model_result_dict(result: ModelResult) -> dict[str, object]:
+    return {
+        "feature_dim": result.feature_dim,
+        "fold_aucs": result.aucs,
+        "mean_auc": result.mean_auc,
+    }
+
+
 def load_randmat_module() -> ModuleType:
     spec = importlib.util.spec_from_file_location("recaman_randmat_helpers", RANDMAT_PATH)
     if spec is None or spec.loader is None:
@@ -310,6 +318,16 @@ def build_local_gap_features(
     return np.asarray(rows, dtype=float), names
 
 
+def drop_named_features(
+    X: np.ndarray,
+    feature_names: list[str],
+    drop_names: set[str],
+) -> tuple[np.ndarray, list[str]]:
+    keep_idx = [idx for idx, name in enumerate(feature_names) if name not in drop_names]
+    kept_names = [feature_names[idx] for idx in keep_idx]
+    return X[:, keep_idx], kept_names
+
+
 def evaluate_rf_auc(
     X: np.ndarray,
     y: np.ndarray,
@@ -354,6 +372,26 @@ def fit_feature_importance(
     importances = list(zip(feature_names, clf.feature_importances_))
     importances.sort(key=lambda item: item[1], reverse=True)
     return [(name, float(score)) for name, score in importances[:top_k]]
+
+
+def run_model(
+    name: str,
+    X: np.ndarray,
+    y: np.ndarray,
+    folds: int,
+    seed: int,
+    n_estimators: int,
+    max_depth: int,
+) -> ModelResult:
+    aucs = evaluate_rf_auc(
+        X=X,
+        y=y,
+        folds=folds,
+        seed=seed,
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+    )
+    return ModelResult(name=name, feature_dim=int(X.shape[1]), aucs=aucs)
 
 
 def parse_args() -> argparse.Namespace:
@@ -423,39 +461,97 @@ def main() -> int:
     X_combined = np.hstack([X_value, X_local])
     value_names = list(randmat.FEATURE_NAMES)
     combined_names = value_names + local_names
+    local_drop_frontier = {"relative_value_h_over_H1", "residual_h_minus_N1"}
+    value_drop_scale = {"length", "first_digit"}
+    X_local_pure, local_pure_names = drop_named_features(X_local, local_names, local_drop_frontier)
+    X_value_deconf, value_deconf_names = drop_named_features(X_value, value_names, value_drop_scale)
+    X_combined_deconf = np.hstack([X_value_deconf, X_local_pure])
+    combined_deconf_names = value_deconf_names + local_pure_names
     print(f"value-only dim           = {X_value.shape[1]}")
+    print(f"local-gap-only dim       = {X_local.shape[1]}")
+    print(f"local-gap-pure dim       = {X_local_pure.shape[1]}")
     print(f"value+local dim          = {X_combined.shape[1]}")
+    print(f"deconfounded combined    = {X_combined_deconf.shape[1]}")
 
-    print("\n[4] Evaluating 42-feature baseline")
-    value_aucs = evaluate_rf_auc(
-        X=X_value,
-        y=y,
-        folds=args.folds,
-        seed=args.seed,
-        n_estimators=args.n_estimators,
-        max_depth=args.max_depth,
+    print("\n[4] Running ablation matrix")
+    models = [
+        run_model(
+            name="value42_rf",
+            X=X_value,
+            y=y,
+            folds=args.folds,
+            seed=args.seed,
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+        ),
+        run_model(
+            name="value42_minus_scale_rf",
+            X=X_value_deconf,
+            y=y,
+            folds=args.folds,
+            seed=args.seed,
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+        ),
+        run_model(
+            name="local_gap_rf",
+            X=X_local,
+            y=y,
+            folds=args.folds,
+            seed=args.seed,
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+        ),
+        run_model(
+            name="local_gap_pure_rf",
+            X=X_local_pure,
+            y=y,
+            folds=args.folds,
+            seed=args.seed,
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+        ),
+        run_model(
+            name="value42_plus_local_rf",
+            X=X_combined,
+            y=y,
+            folds=args.folds,
+            seed=args.seed,
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+        ),
+        run_model(
+            name="value42_plus_local_deconf_rf",
+            X=X_combined_deconf,
+            y=y,
+            folds=args.folds,
+            seed=args.seed,
+            n_estimators=args.n_estimators,
+            max_depth=args.max_depth,
+        ),
+    ]
+    model_map = {result.name: result for result in models}
+    for result in models:
+        print(f"{result.name:28s} mean_auc={result.mean_auc:.4f}  folds={[round(x, 4) for x in result.aucs]}")
+
+    print(
+        f"\nvalue+local lift over value42           = "
+        f"{model_map['value42_plus_local_rf'].mean_auc - model_map['value42_rf'].mean_auc:+.4f}"
     )
-    print(f"fold AUCs                = {[round(x, 4) for x in value_aucs]}")
-    print(f"mean AUC                 = {np.mean(value_aucs):.4f}")
-
-    print("\n[5] Evaluating 42 + local-gap features")
-    combined_aucs = evaluate_rf_auc(
-        X=X_combined,
-        y=y,
-        folds=args.folds,
-        seed=args.seed,
-        n_estimators=args.n_estimators,
-        max_depth=args.max_depth,
+    print(
+        f"value+local_deconf lift over value42    = "
+        f"{model_map['value42_plus_local_deconf_rf'].mean_auc - model_map['value42_rf'].mean_auc:+.4f}"
     )
-    print(f"fold AUCs                = {[round(x, 4) for x in combined_aucs]}")
-    print(f"mean AUC                 = {np.mean(combined_aucs):.4f}")
-    print(f"lift over value-only     = {np.mean(combined_aucs) - np.mean(value_aucs):+.4f}")
+    print(
+        f"local_gap_pure lift over value42        = "
+        f"{model_map['local_gap_pure_rf'].mean_auc - model_map['value42_rf'].mean_auc:+.4f}"
+    )
 
-    print("\n[6] Top feature importances for value+local model")
+    print("\n[5] Top feature importances for deconfounded combined model")
     top_features = fit_feature_importance(
-        X=X_combined,
+        X=X_combined_deconf,
         y=y,
-        feature_names=combined_names,
+        feature_names=combined_deconf_names,
         seed=args.seed,
         n_estimators=args.n_estimators,
         max_depth=args.max_depth,
@@ -488,20 +584,17 @@ def main() -> int:
                 "late_digit_lengths": format_digit_lengths(sample.late_values),
                 "still_digit_lengths": format_digit_lengths(sample.still_values),
             },
-            "models": {
-                "value42_rf": {
-                    "feature_dim": int(X_value.shape[1]),
-                    "fold_aucs": value_aucs,
-                    "mean_auc": float(np.mean(value_aucs)),
-                },
-                "value42_plus_local_rf": {
-                    "feature_dim": int(X_combined.shape[1]),
-                    "fold_aucs": combined_aucs,
-                    "mean_auc": float(np.mean(combined_aucs)),
-                    "lift_over_value42": float(np.mean(combined_aucs) - np.mean(value_aucs)),
-                },
+            "feature_sets": {
+                "value42_names": value_names,
+                "local_gap_names": local_names,
+                "local_gap_pure_names": local_pure_names,
+                "value42_minus_scale_names": value_deconf_names,
+                "value42_plus_local_deconf_names": combined_deconf_names,
+                "dropped_local_frontier_names": sorted(local_drop_frontier),
+                "dropped_value_scale_names": sorted(value_drop_scale),
             },
-            "top_features_value42_plus_local": [
+            "models": {result.name: model_result_dict(result) for result in models},
+            "top_features_value42_plus_local_deconf": [
                 {"name": name, "importance": score} for name, score in top_features
             ],
         }
