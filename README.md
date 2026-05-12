@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 # Recaman Obstructions
-=======
-# Récaman Obstruction
->>>>>>> 0b83a48686e4dd8e6599de276792716167a982a2
 
 This repo studies the obstruction structure around the Recaman sequence from three angles:
 
@@ -13,19 +8,13 @@ This repo studies the obstruction structure around the Recaman sequence from thr
 
 The goal is not just to get high classification scores. The goal is to find signals that survive honest temporal validation and remain interpretable in terms of the Recaman rule.
 
-=======
-Récaman Obstructions
+The strongest current process-side conclusion is simple:
 
+- the classic `Theta_3` wheel is falsified as a predictor of the real obstruction bit,
+- the previous obstruction bit `b_{n-1}` is the dominant predictive state,
+- the observed stream is best described as near-perfect alternation plus rare phase-slip defects.
 
-This repo studies the obstruction structure around the Recaman sequence from three angles:
-
-1. value-side obstruction classification on a curated list of missing / obstructed integers,
-2. process-side validation of the Recaman obstruction bit itself,
-3. geometric / phase-space visualization of the trajectory.
-
-The goal is not just to get high classification scores. The goal is to find signals that survive honest temporal validation and remain interpretable in terms of the Recaman rule.
-
->>>>>>> b71fc54184e034d463d42479d48bb7474ae71a0b
+That is a stronger empirical statement than the geometric story at the moment. The geometric / phase-slip framing remains useful as an exploratory language for where the rare defects occur, but the local closure problem for those defect locations is still open.
 ## 3D Snapshot
 
 Current 3D phase-space render from `scripts/recaman_phase_space_3d.py`:
@@ -67,15 +56,26 @@ The repo is trying to answer four concrete questions:
 
 ## Best Results First
 
-### 1. Strongest process-side result: the `Theta_3` wheel is falsified
+### 1. Strongest process-side result: previous-bit conditioning dominates, and the `Theta_3` wheel is falsified
 
 From [`outputs/recaman_wheel_results.json`](outputs/recaman_wheel_results.json):
 
 - `q_210 = 0.500007`
 - `q_321 = 0.499996`
 - `|Δq| = 0.000011`
+- `q(prev=0) = 0.998919`
+- `q(prev=1) = 0.001087`
+- `|q(prev=0) - q(prev=1)| = 0.997832`
+- phase-slip rate `P(b_n = b_{n-1}) = 0.001084`
+- mean alternating run length `≈ 415`
 
-That is essentially no separation. As a predictive state for the real obstruction bit, the two-state `Theta_3` wheel fails.
+Interpretation:
+
+- As a predictive state for the real obstruction bit, the two-state `Theta_3` wheel fails.
+- As a first-order descriptive model, the previous bit almost completely determines the next one.
+- The obstruction stream is therefore best summarised as "alternation with rare defects", not as a useful `Theta_3` Markov wheel.
+
+This does **not** mean the phase-slip locations are solved. It means the empirical closure problem has sharpened: the right thing to model is where the rare defects occur, not whether the symbolic wheel flips.
 
 ### 2. Best trustworthy value-side result: dataset `D` reaches mean AUC `0.7586`
 
@@ -93,7 +93,7 @@ Dataset `D` scores:
 
 This is currently the most meaningful value-side score in the repo because it survives the leakage fixes and uses the hardest, most local task formulation.
 
-### 3. Random-matrix search gives moderate signal on expanded value-side pairs
+### 3. Random-matrix search gives moderate value-side signal, but it is not the main process-side explanation
 
 From [`outputs/best_obstructions_random_20260512_172100.json`](outputs/best_obstructions_random_20260512_172100.json):
 
@@ -104,6 +104,8 @@ From [`outputs/best_obstructions_random_20260512_172100.json`](outputs/best_obst
 - random-forest CV mean AUC: `0.6633`
 
 This is weaker than dataset `D`, but it is also a cleaner baseline than the very high `A/B/C` endpoint scores below.
+
+It also answers a different question from the wheel analysis. The `42`-feature search is about value-side obstruction-list membership. It does **not** explain the real obstruction bit process nearly as well as the previous-bit / phase-slip picture does.
 
 ### 4. High AUC on `A/B/C`, but these are easier tasks
 
@@ -167,9 +169,15 @@ Main outputs:
 - measured phase-slip rate is `0.001084`,
 - logistic 4-feature closure accuracy is `0.98575`.
 
+The right high-level reading is:
+
+- the `Theta_3` wheel adds almost nothing,
+- `b_{n-1}` carries the dominant signal,
+- the remaining unsolved piece is the state dependence of the rare phase-slip events.
+
 ### 4. 3D phase-space exploration
 
-[`scripts/recaman_phase_space_3d.py`](scripts/recaman_phase_space_3d.py) generates delay embeddings, spatiotemporal embeddings, and lifted-arc 3D renders of the Recaman trajectory. This part is exploratory and geometric rather than a predictive benchmark.
+[`scripts/recaman_phase_space_3d.py`](scripts/recaman_phase_space_3d.py) generates delay embeddings, spatiotemporal embeddings, and lifted-arc 3D renders of the Recaman trajectory. This part is exploratory and geometric rather than a predictive benchmark. At present the geometry is best treated as a way to generate hypotheses about phase-slip localization, not as a closed explanation of the process.
 
 ## Current Result Files
 
