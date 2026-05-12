@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Recaman Obstructions
+=======
+# Récaman Obstruction
+>>>>>>> 0b83a48686e4dd8e6599de276792716167a982a2
 
 This repo studies the obstruction structure around the Recaman sequence from three angles:
 
