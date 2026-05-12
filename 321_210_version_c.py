@@ -662,8 +662,8 @@ def print_dataset_result(result: DatasetResult) -> None:
     print(f"=== dataset {result.name} ===")
     print(f"contexts: {result.contexts}")
     print(f"examples: {result.examples}")
-    print(f"blocked_auc: {rounded}")
-    print(f"mean_blocked_auc: {result.mean_auc:.4f}")
+    print(f"validation_auc: {rounded}")
+    print(f"mean_validation_auc: {result.mean_auc:.4f}")
     print()
 
 
