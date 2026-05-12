@@ -207,7 +207,9 @@ def plot_embedding(
     ax.add_collection3d(line_collection)
 
     if blocked is None:
-        scatter_colors = plt.cm.coolwarm(colors)
+        low = np.array([0.33, 0.64, 1.0, 1.0])
+        high = np.array([0.72, 1.0, 0.72, 1.0])
+        scatter_colors = low + colors.reshape(-1, 1) * (high - low)
     else:
         scatter_colors = np.where(
             blocked.reshape(-1, 1) > 0,
