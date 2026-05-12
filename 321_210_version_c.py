@@ -137,6 +137,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--raw", help="Read the obstruction list from a raw string argument.")
     parser.add_argument("--controls-per-positive", type=int, default=1, help="Matched controls per positive context.")
     parser.add_argument("--blocked-folds", type=int, default=5, help="Blocked folds over event order.")
+    parser.add_argument(
+        "--cv-scheme",
+        choices=("forward", "blocked"),
+        default="forward",
+        help="Validation scheme. 'forward' avoids train-on-future leakage; 'blocked' keeps the legacy blocked K-fold.",
+    )
+    parser.add_argument(
+        "--purge-contexts",
+        type=int,
+        default=1,
+        help="Contexts to purge immediately before each forward test block.",
+    )
     parser.add_argument("--n-estimators", type=int, default=300, help="RandomForest trees.")
     parser.add_argument("--max-depth", type=int, default=5, help="RandomForest max depth.")
     parser.add_argument("--seed", type=int, default=7, help="Random seed.")
@@ -380,13 +392,6 @@ def build_gap_features(
     return np.concatenate([context, encode_number(candidate_gap), encode_number(candidate_start), prev_gap_features])
 
 
-def expand_blocked_points(events: list[Event]) -> set[int]:
-    blocked: set[int] = set()
-    for event in events:
-        blocked.update(range(event.start, event.end + 1))
-    return blocked
-
-
 def sample_anchor_controls(
     positive_anchor: int,
     prev_start: int | None,
@@ -451,18 +456,19 @@ def build_dataset(
     seed: int,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, tuple[str, ...]]:
     rng = random.Random(seed)
-    blocked_points = expand_blocked_points(events)
     X_rows: list[np.ndarray] = []
     y_rows: list[int] = []
     group_rows: list[int] = []
     feature_names = ANCHOR_FEATURE_NAMES if name in {"A", "B", "C"} else GAP_FEATURE_NAMES
 
+    visible_blocked_points: set[int] = set()
     seen_starts: set[int] = set()
     prev_start: int | None = None
     prev_gap: int | None = None
     context_index = 0
 
     for event in events:
+        visible_blocked_points.update(range(event.start, event.end + 1))
         current_gap = None if prev_start is None else event.start - prev_start
 
         if name == "A" and event.length == 1:
@@ -470,7 +476,13 @@ def build_dataset(
             X_rows.append(build_anchor_features(event.start, event.index, prev_start, prev_gap, seen_starts))
             y_rows.append(1)
             group_rows.append(context_index)
-            for control in sample_anchor_controls(event.start, prev_start, blocked_points, rng, controls_per_positive):
+            for control in sample_anchor_controls(
+                event.start,
+                prev_start,
+                visible_blocked_points,
+                rng,
+                controls_per_positive,
+            ):
                 X_rows.append(build_anchor_features(control, event.index, prev_start, prev_gap, seen_starts))
                 y_rows.append(0)
                 group_rows.append(context_index)
@@ -480,7 +492,13 @@ def build_dataset(
             X_rows.append(build_anchor_features(event.start, event.index, prev_start, prev_gap, seen_starts))
             y_rows.append(1)
             group_rows.append(context_index)
-            for control in sample_anchor_controls(event.start, prev_start, blocked_points, rng, controls_per_positive):
+            for control in sample_anchor_controls(
+                event.start,
+                prev_start,
+                visible_blocked_points,
+                rng,
+                controls_per_positive,
+            ):
                 X_rows.append(build_anchor_features(control, event.index, prev_start, prev_gap, seen_starts))
                 y_rows.append(0)
                 group_rows.append(context_index)
@@ -490,7 +508,13 @@ def build_dataset(
             X_rows.append(build_anchor_features(event.end, event.index, prev_start, prev_gap, seen_starts))
             y_rows.append(1)
             group_rows.append(context_index)
-            for control in sample_anchor_controls(event.end, prev_start, blocked_points, rng, controls_per_positive):
+            for control in sample_anchor_controls(
+                event.end,
+                prev_start,
+                visible_blocked_points,
+                rng,
+                controls_per_positive,
+            ):
                 X_rows.append(build_anchor_features(control, event.index, prev_start, prev_gap, seen_starts))
                 y_rows.append(0)
                 group_rows.append(context_index)
@@ -500,7 +524,13 @@ def build_dataset(
             X_rows.append(build_gap_features(current_gap, event.index, prev_start, prev_gap, seen_starts))
             y_rows.append(1)
             group_rows.append(context_index)
-            for control in sample_gap_controls(current_gap, prev_start, blocked_points, rng, controls_per_positive):
+            for control in sample_gap_controls(
+                current_gap,
+                prev_start,
+                visible_blocked_points,
+                rng,
+                controls_per_positive,
+            ):
                 X_rows.append(build_gap_features(control, event.index, prev_start, prev_gap, seen_starts))
                 y_rows.append(0)
                 group_rows.append(context_index)
@@ -550,6 +580,58 @@ def blocked_cv_auc(
         clf.fit(X[train_mask], y[train_mask])
         scores = clf.predict_proba(X[test_mask])[:, 1]
         aucs.append(float(roc_auc_score(y[test_mask], scores)))
+    return aucs
+
+
+def forward_cv_auc(
+    X: np.ndarray,
+    y: np.ndarray,
+    groups: np.ndarray,
+    folds: int,
+    seed: int,
+    n_estimators: int,
+    max_depth: int,
+    purge_contexts: int,
+) -> list[float]:
+    unique_groups = np.unique(groups)
+    if len(unique_groups) < 3:
+        raise ValueError("Need at least three contexts for forward CV.")
+
+    n_chunks = min(folds + 1, len(unique_groups))
+    split_groups = [np.array(chunk, dtype=np.int32) for chunk in np.array_split(unique_groups, n_chunks) if len(chunk)]
+    if len(split_groups) < 2:
+        raise ValueError("Need at least one train block and one test block for forward CV.")
+
+    aucs: list[float] = []
+    for fold_id in range(1, len(split_groups)):
+        test_groups = split_groups[fold_id]
+        train_candidates = np.concatenate(split_groups[:fold_id])
+        if purge_contexts > 0:
+            cutoff = test_groups[0] - purge_contexts
+            train_groups = train_candidates[train_candidates < cutoff]
+        else:
+            train_groups = train_candidates
+        if len(train_groups) == 0:
+            continue
+
+        test_mask = np.isin(groups, test_groups)
+        train_mask = np.isin(groups, train_groups)
+        if np.unique(y[train_mask]).size < 2 or np.unique(y[test_mask]).size < 2:
+            continue
+
+        clf = RandomForestClassifier(
+            n_estimators=n_estimators,
+            max_depth=max_depth,
+            random_state=seed + fold_id,
+            class_weight="balanced",
+            n_jobs=-1,
+        )
+        clf.fit(X[train_mask], y[train_mask])
+        scores = clf.predict_proba(X[test_mask])[:, 1]
+        aucs.append(float(roc_auc_score(y[test_mask], scores)))
+
+    if len(aucs) < 1:
+        raise ValueError("Forward CV produced no valid folds.")
     return aucs
 
 
@@ -610,6 +692,8 @@ def main(argv: list[str] | None = None) -> int:
 
     results_payload: dict[str, object] = {
         "summary": summary,
+        "cv_scheme": args.cv_scheme,
+        "purge_contexts": args.purge_contexts,
         "datasets": {},
     }
 
@@ -620,15 +704,27 @@ def main(argv: list[str] | None = None) -> int:
             controls_per_positive=args.controls_per_positive,
             seed=args.seed + offset,
         )
-        aucs = blocked_cv_auc(
-            X=X,
-            y=y,
-            groups=groups,
-            folds=args.blocked_folds,
-            seed=args.seed + 100 * (offset + 1),
-            n_estimators=args.n_estimators,
-            max_depth=args.max_depth,
-        )
+        if args.cv_scheme == "forward":
+            aucs = forward_cv_auc(
+                X=X,
+                y=y,
+                groups=groups,
+                folds=args.blocked_folds,
+                seed=args.seed + 100 * (offset + 1),
+                n_estimators=args.n_estimators,
+                max_depth=args.max_depth,
+                purge_contexts=args.purge_contexts,
+            )
+        else:
+            aucs = blocked_cv_auc(
+                X=X,
+                y=y,
+                groups=groups,
+                folds=args.blocked_folds,
+                seed=args.seed + 100 * (offset + 1),
+                n_estimators=args.n_estimators,
+                max_depth=args.max_depth,
+            )
         result = DatasetResult(
             name=name,
             feature_dim=int(X.shape[1]),
@@ -641,8 +737,8 @@ def main(argv: list[str] | None = None) -> int:
             "feature_dim": result.feature_dim,
             "contexts": result.contexts,
             "examples": result.examples,
-            "blocked_auc": aucs,
-            "mean_blocked_auc": result.mean_auc,
+            "auc": aucs,
+            "mean_auc": result.mean_auc,
             "feature_names": list(feature_names),
         }
 
