@@ -76,11 +76,11 @@
           "fold_aucs": [
             0.98448088,
             0.983173105,
-            0.9827784249999999,
+            0.98277843,
             0.984251155,
             0.9816883649999999
           ],
-          "mean_auc": 0.983274386
+          "mean_auc": 0.983274387
         },
         "local_gap_pure_rf": {
           "feature_dim": 7,
@@ -119,7 +119,7 @@
       "summary": {
         "value42_auc": 0.7049108000000001,
         "value42_minus_scale_auc": 0.6611977920000001,
-        "local_gap_auc": 0.983274386,
+        "local_gap_auc": 0.983274387,
         "local_gap_pure_auc": 0.928501901,
         "value42_plus_local_auc": 0.9679454219999999,
         "value42_plus_local_deconf_auc": 0.9033704180000001,
