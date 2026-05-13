@@ -160,31 +160,11 @@ This is the main leakage-reduced value-side pipeline.
 
 ### 3. Wheel / phase-slip validation
 
-[`scripts/recaman_wheel_validator.py`](scripts/recaman_wheel_validator.py) runs the true Recaman generator and tests whether the symbolic wheel state predicts the real obstruction bit.
-
-Main outputs:
-
-- `Theta_3` wheel separation is essentially zero,
-- bit-history separation is extremely strong,
-- measured phase-slip rate is `0.001084`,
-- logistic 4-feature closure accuracy is `0.98575`.
-
-The right high-level reading is:
-
-- the `Theta_3` wheel adds almost nothing,
-- `b_{n-1}` carries the dominant signal,
-- the remaining unsolved piece is the state dependence of the rare phase-slip events.
+[`scripts/recaman_wheel_validator.py`](scripts/recaman_wheel_validator.py) runs the true Recaman generator and tests whether the symbolic wheel state predicts the real obstruction bit. Quantitative results are in [Best Results First §1](#1-strongest-process-side-result-previous-bit-conditioning-dominates-and-the-theta_3-wheel-is-falsified).
 
 ### 4. 3D phase-space exploration
 
 [`scripts/recaman_phase_space_3d.py`](scripts/recaman_phase_space_3d.py) generates delay embeddings, spatiotemporal embeddings, and lifted-arc 3D renders of the Recaman trajectory. This part is exploratory and geometric rather than a predictive benchmark. At present the geometry is best treated as a way to generate hypotheses about phase-slip localization, not as a closed explanation of the process.
-
-## Current Result Files
-
-- [`outputs/version_c_obstructions_results.json`](outputs/version_c_obstructions_results.json)
-- [`outputs/recaman_wheel_results.json`](outputs/recaman_wheel_results.json)
-- [`outputs/best_obstructions_random_20260512_172100.json`](outputs/best_obstructions_random_20260512_172100.json)
-- [`outputs/recaman_phase_arc_readme.png`](outputs/recaman_phase_arc_readme.png)
 
 ## Dataset Summary
 
@@ -246,30 +226,4 @@ python .\scripts\recaman_phase_space_3d.py --steps 2800 --mode arc-lift --twist 
 5. Test whether the moderate `0.66` random-matrix signal survives under stronger locality constraints and alternative control matching.
 6. Add a single experiment index file so each saved JSON can be traced to the exact command and code version that produced it.
 
-# Added to Recamán Findings
-
-New sections added:
-
-1. **Obstruction-Only Grassmannian and the 126-Event Face-Lock**
-   - Explains why Gr(2,3): 2 active demand coordinates inside 3 total demand coordinates.
-   - Adds the actual dual set of the longest survivor:
-     \[
-     \{66,59,0\}\{0,0,1\}
-     \]
-   - Records the face-lock break:
-     \[
-     \{66,59,0\}\to\{66,59,1\}
-     \]
-   - Adds residue:
-     \[
-     \Omega=-N_0+2N_1-N_2,\quad \Omega:52\to51
-     \]
-   - Adds digit-wedge conclusion: rigid simplex lock, breathing digit wedge.
-
-2. **Argmin Lagrangian Hybrid and Attractor PDE Layer**
-   - Adds strict argmin local actions.
-   - Records the reported 80-term collapse into Collatz 4-2-1.
-   - Adds coverage-pressure correction.
-   - Adds the coupled attractor PDE.
-   - Adds caveat: true differentiability requires softmin and smooth source kernels.
 
