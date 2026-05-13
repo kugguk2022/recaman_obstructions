@@ -2,7 +2,7 @@
   "N_main": 10000000,
   "N_features": 300000,
   "step1": {
-    "elapsed_s": 3.97,
+    "elapsed_s": 7.69,
     "P_b1": 0.500001
   },
   "step2a_theta3_wheel": {
